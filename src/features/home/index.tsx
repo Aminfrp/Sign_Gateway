@@ -3,20 +3,17 @@ import { useState } from "react";
 import { STAGE } from "./contract.type";
 import { ContractFeature } from "./ContractFeature";
 import { ContractInfoFeature } from "./ContractInfoFeature";
-import { NationalCardSerialFeature } from "./NationalCardSerialFeature";
 import { SubmitVideoVerification } from "./SubmitVideoVerification";
 import { VideoVerificationPlaceholderFeature } from "./VideoVerificationPlaceholderFeature";
 
 export const HomeFeature = () => {
-  const [stage, setStage] = useState<STAGE>(STAGE.VERIFICATION_VIDEO);
+  const [stage, setStage] = useState<STAGE>(STAGE.OTP);
   const [videoBlob, setVideoBlob] = useState<Blob | null>(null);
 
   const renderStages = (stage: STAGE) => {
     switch (stage) {
       case STAGE.OTP:
         return <ContractInfoFeature setStage={setStage} />;
-      case STAGE.NATIONAL_CARD_SERIAL_NUMBER:
-        return <NationalCardSerialFeature setStage={setStage} />;
       case STAGE.VERIFICATION_VIDEO_PLACEHOLDER:
         return (
           <VideoVerificationPlaceholderFeature
