@@ -1,5 +1,6 @@
 import { CrossIcon } from "@/assets/icons";
 import { Button, Card, Refer } from "@/components";
+import { LuRefreshCw } from "react-icons/lu";
 import { PiClipboardTextLight } from "react-icons/pi";
 import { RxCalendar } from "react-icons/rx";
 
@@ -7,10 +8,17 @@ export const SignFailedFeature = () => {
   return (
     <Card className="p-8 h-[42rem] w-[28.75rem] flex flex-col items-center">
       <CrossIcon />
-      <div className="text-red-600 font-yekan-bold text-sm my-3">
+      <div className="text-red-600 font-yekan-bold text-sm py-3">
         امضای سند با مشکل مواجه شد!{" "}
       </div>
-      <Button className="w-full">بازگشت خودکار به سایت مبدا</Button>
+      <Button className="w-full mb-3">
+        <LuRefreshCw />
+        احراز هویت مجدد
+      </Button>
+
+      <Button className="w-full" variant="outline">
+        بازگشت خودکار به سایت مبدا
+      </Button>
       <div className="text-slate-400 text-xs py-3">
         بازگشت خودکار تا ۱۵ ثانیه دیگر
       </div>

@@ -5,9 +5,9 @@ import { RxCalendar } from "react-icons/rx";
 
 export const SignSuccessFeature = () => {
   return (
-    <Card className="p-8 h-[42rem] w-[28.75rem] flex flex-col items-center">
+    <Card className="p-8  w-[28.75rem] flex flex-col items-center">
       <GreenTickIcon />
-      <div className="text-green-600 font-yekan-bold text-sm my-3">
+      <div className="text-green-600 font-yekan-bold text-sm py-3">
         سند امضا شد
       </div>
       <Button className="w-full">بازگشت خودکار به سایت مبدا</Button>
@@ -35,8 +35,8 @@ export const SignSuccessFeature = () => {
       <div className="text-slate-400 text-xs pb-4">
         HKP25DH26WLKV93DKLD58DLOD3VJS32SDFJ235
       </div>
-      <div className="w-full h-14  bg-gradient-to-r to-[#34B6EF] from-[#0153eb] rounded-xl relative">
-        <img src="digital.png" alt="" />
+      <div className="w-full min-h-14  bg-gradient-to-r to-[#237ea6] from-[#004080] rounded-xl relative">
+        <img src="/digital.png" className="h-full w-full" alt="" />
         <div className="text-white text-sm absolute top-1/2 -translate-y-1/2  left-1/2 transform -translate-x-1/2 w-full text-center">
           اعتبار یافته از گواهی دیجیتال وزارت صمت
         </div>
