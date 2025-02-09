@@ -53,7 +53,7 @@ export const LoginFeature = () => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="md:p-8 xs:p-0 h-[42rem] flex flex-col"
+      className="md:p-8 xs:p-0 h-[30rem] flex flex-col"
     >
       <h1 className="text-lg font-yekan-bold pb-3">ورود و ثبت‌نام </h1>
       <div className="text-slate-500 text-xs pb-5">
