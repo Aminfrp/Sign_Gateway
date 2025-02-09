@@ -1,8 +1,9 @@
-import { GreenVerifyIcon, InfoIcon, UserPrimaryIcon } from "@/assets/icons";
+import { InfoIcon, UserPrimaryIcon } from "@/assets/icons";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { FC, useState } from "react";
 import { SlRefresh } from "react-icons/sl";
 import { Button, Card, Datepicker, TextInput } from "../../components";
+import { ContractSignStatus } from "./components/ContractSignStatus";
 import { ContractInfoProps, STAGE } from "./contract.type";
 
 const ContractInfoFeature: FC<ContractInfoProps> = (props) => {
@@ -116,35 +117,7 @@ const ContractInfoFeature: FC<ContractInfoProps> = (props) => {
           </Button>
         </div>
       </Card>
-      <Card className="p-[2.5rem] max-h-max">
-        <div className=" font-yekan-bold">پیش‌نیازهای امضای سند</div>
-
-        <div className="flex justify-between gap-3 items-center pt-10 border-b border-dashed pb-3  flex-wrap">
-          <div>
-            <img src="level.png" alt="" />
-          </div>
-          <div className="flex-1 flex flex-col gap-2">
-            <p className="font-yekan-bold">احراز هویت سطح 3</p>
-            <p className="text-slate-400 text-sm">مورد نیاز برای درگاه</p>
-          </div>
-          <div className="text-green-600 flex justify-center gap-3 items-center bg-green-600/10 px-3 py-2 rounded-lg">
-            <GreenVerifyIcon /> احراز هویت موفق
-          </div>
-        </div>
-
-        <div className="flex justify-between gap-3 items-center pt-3 flex-wrap">
-          <div>
-            <img src="auth.png" alt="" />
-          </div>
-          <div className="flex-1 flex flex-col gap-2">
-            <p className="font-yekan-bold">احراز هویت ویدیویی</p>
-            <p className="text-slate-400 text-sm">نیازمند وبکم</p>
-          </div>
-          <div className="text-green-600 flex justify-center gap-3 items-center bg-green-600/10 px-3 py-2 rounded-lg">
-            <GreenVerifyIcon /> احراز هویت موفق
-          </div>
-        </div>
-      </Card>
+      <ContractSignStatus />
     </div>
   );
 };
