@@ -1,10 +1,16 @@
-import { GreenVerifyIcon, UserPrimaryIcon } from "@/assets/icons";
-import { FC } from "react";
+import { GreenVerifyIcon, InfoIcon, UserPrimaryIcon } from "@/assets/icons";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { FC, useState } from "react";
 import { SlRefresh } from "react-icons/sl";
 import { Button, Card, Datepicker, TextInput } from "../../components";
 import { ContractInfoProps, STAGE } from "./contract.type";
 
 export const ContractInfoFeature: FC<ContractInfoProps> = (props) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleDialogClose = () => {
+    setIsDialogOpen(false);
+  };
   return (
     <div className="lg:col-span-4 xs:col-span-12 flex flex-col gap-3">
       <Card className="p-10 max-h-max">
@@ -30,6 +36,48 @@ export const ContractInfoFeature: FC<ContractInfoProps> = (props) => {
             label="تاریخ تولد"
             placeholder="تاریخ تولد خود را بنویسید..."
           />
+          <div className="relative">
+            <TextInput
+              label="سریال پشت کارت ملی"
+              placeholder="متن راهنمای اینپوت"
+            />
+            <Dialog
+              open={isDialogOpen}
+              onOpenChange={(open) => setIsDialogOpen(open)}
+            >
+              <DialogTrigger>
+                <span
+                  className="absolute top-2 left-2 cursor-pointer opacity-50"
+                  onClick={() => console.log("open serial card modal")}
+                >
+                  <InfoIcon />
+                </span>
+              </DialogTrigger>
+              <DialogContent>
+                <div className="flex gap-3 text-end">
+                  <div className="space-y-2 flex-1 ">
+                    <h2 className="font-yekan-bold text-lg">
+                      راهنمای سریال پشت کارت ملی
+                    </h2>
+                    <div className="text-xs">
+                      سریال 10 رقمی مشابه تصویر زیر در پشت کارت ملی شما قرار
+                      دارد{" "}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex justify-center py-4">
+                  <img src="national_card.png" alt="national_card" />
+                </div>
+                <Button
+                  className="min-h-12 w-full mt-3"
+                  onClick={handleDialogClose}
+                >
+                  متوجه شدم
+                </Button>
+              </DialogContent>
+            </Dialog>
+          </div>
+
           <div className="flex gap-4 w-full">
             <TextInput
               label="کد امنیتی"
@@ -61,7 +109,7 @@ export const ContractInfoFeature: FC<ContractInfoProps> = (props) => {
           <Button variant="outline">انصراف</Button>
           <Button
             onClick={() => {
-              props.setStage(STAGE.NATIONAL_CARD_SERIAL_NUMBER);
+              props.setStage(STAGE.VERIFICATION_VIDEO_PLACEHOLDER);
             }}
           >
             امضای سند
