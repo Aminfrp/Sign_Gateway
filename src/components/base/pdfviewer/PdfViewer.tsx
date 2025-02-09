@@ -10,9 +10,8 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 export const PdfViewer = ({ url, status }: PdfDataType) => {
   const [numPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState(1);
-  const containerRef = useRef<HTMLDivElement | null>(null); // Reference to the parent container
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
-  // Get the parent container's dimensions
   const getContainerDimensions = () => {
     if (containerRef.current) {
       return {
@@ -27,7 +26,6 @@ export const PdfViewer = ({ url, status }: PdfDataType) => {
     getContainerDimensions()
   );
 
-  // Update the dimensions on window resize
   useEffect(() => {
     const handleResize = () => {
       setContainerDimensions(getContainerDimensions());
@@ -35,6 +33,12 @@ export const PdfViewer = ({ url, status }: PdfDataType) => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      setContainerDimensions(getContainerDimensions());
+    }
+  }, [containerRef.current]);
 
   function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
     setNumPages(numPages);
