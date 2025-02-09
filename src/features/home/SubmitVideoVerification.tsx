@@ -18,6 +18,12 @@ export const SubmitVideoVerification: React.FC<SubmitVideoVerificationProps> = (
     } else {
       videoRef.current?.pause();
     }
+    return () => {
+      if (videoRef.current) {
+        videoRef.current.pause();
+        videoRef.current.currentTime = 0;
+      }
+    };
   }, [isPlay]);
 
   useEffect(() => {
