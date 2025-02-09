@@ -5,7 +5,7 @@ export default {
   title: "Components/Collapse",
   component: Collapse,
   argTypes: {
-    className: { control: "text" },
+    className: { control: "text", description: "Custom Class" },
   },
 } as Meta;
 

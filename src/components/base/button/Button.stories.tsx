@@ -10,15 +10,19 @@ export default {
         type: "radio",
         options: ["default", "outline", "ghost", "link"],
       },
+      description: "Button Variant (default, outline, ghost, link)",
     },
     isLoading: {
       control: "boolean",
+      description: "Loading State",
     },
     className: {
       control: "text",
+      description: "Custom Class",
     },
     children: {
       control: "text",
+      description: "Button Content",
     },
   },
 } as Meta;

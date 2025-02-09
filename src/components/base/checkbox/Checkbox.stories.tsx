@@ -7,12 +7,15 @@ export default {
   argTypes: {
     label: {
       control: "text",
+      description: "Label Text",
     },
     containerClassName: {
       control: "text",
+      description: "Custom Class",
     },
     id: {
       control: "text",
+      description: "Custom ID",
     },
   },
 } as Meta;

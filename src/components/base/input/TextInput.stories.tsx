@@ -6,7 +6,7 @@ export default {
   title: "Components/TextInput",
   component: TextInput,
   argTypes: {
-    onChange: { action: "changed" },
+    onChange: { action: "changed", description: "onChange Event" },
   },
 } as Meta;
 

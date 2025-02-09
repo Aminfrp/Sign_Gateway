@@ -8,3 +8,4 @@ export * from "./input/TextInput";
 export * from "./pdfviewer/PdfViewer";
 export * from "./refer/Refer";
 export * from "./selectChips/SelectChips";
+export * from "./fullPageLoading/FullPageLoading"

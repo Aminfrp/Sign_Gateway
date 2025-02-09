@@ -5,8 +5,8 @@ export default {
   title: "Components/Card",
   component: Card,
   argTypes: {
-    className: { control: "text" },
-    children: { control: "text" },
+    className: { control: "text", description: "Custom Class" },
+    children: { control: "text", description: "Card Content" },
   },
 } as Meta;
 

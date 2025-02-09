@@ -1,3 +1,4 @@
+import FullPageLoading from "@/components/base/fullPageLoading/FullPageLoading";
 import { AuthLayout } from "@/components/layouts/auth/AuthLayout";
 import { ROUTES } from "@/constants";
 import { lazy, Suspense } from "react";
@@ -10,7 +11,7 @@ const Home = lazy(() => import("@/views/Home"));
 const Router = () => {
   return (
     <BrowserRouter>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<FullPageLoading />}>
         <Routes>
           <Route path={ROUTES.HOME} element={<Layout />}>
             <Route path={ROUTES.HOME} element={<Home />} />

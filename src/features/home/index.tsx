@@ -1,4 +1,5 @@
 import { Collapse } from "@/components";
+import FullPageLoading from "@/components/base/fullPageLoading/FullPageLoading";
 import { lazy, Suspense, useState } from "react";
 import { STAGE } from "./contract.type";
 import { ContractFeature } from "./ContractFeature";
@@ -38,9 +39,7 @@ export const HomeFeature = () => {
   return (
     <div className="my-4 grid lg:grid-cols-12 md:grid-cols-1 gap-5 flex-1">
       <ContractFeature />
-      <Suspense fallback={<div>loading...</div>}>
-        {renderStages(stage)}
-      </Suspense>
+      <Suspense fallback={<FullPageLoading />}>{renderStages(stage)}</Suspense>
       <Collapse className="lg:col-span-8 xs:col-span-12" />
     </div>
   );

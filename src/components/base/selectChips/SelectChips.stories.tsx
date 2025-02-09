@@ -5,7 +5,7 @@ export default {
   title: "Components/SelectChips",
   component: SelectChips,
   argTypes: {
-    onClick: { action: "clicked" },
+    onClick: { action: "clicked", description: "onClick Event" },
   },
 } as Meta;
 

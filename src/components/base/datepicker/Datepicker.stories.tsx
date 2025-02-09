@@ -7,7 +7,7 @@ export default {
   title: "Components/Datepicker",
   component: Datepicker,
   argTypes: {
-    onChange: { action: "changed" },
+    onChange: { action: "changed", description: "onChange Event" },
   },
 } as Meta;
 
