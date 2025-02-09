@@ -32,7 +32,7 @@ export const LoginFeature = () => {
     })
       .then((res) => {
         localStorage.setItem("keyId", res?.result[0].keyId as string);
-       
+
         return handleAuthorize({
           businessClientId: variables.clientId,
           keyId: res?.result[0].keyId as string,
@@ -41,10 +41,10 @@ export const LoginFeature = () => {
         });
       })
       .then((res) => {
-         localStorage.setItem(
-           "expire_in",
-           ("" + res?.result[0].expires_in) as string
-         );
+        localStorage.setItem(
+          "expire_in",
+          ("" + res?.result[0].expires_in) as string
+        );
         localStorage.setItem("phoneNumber", value.phoneNumber);
         navigate("/auth/otp");
       });
@@ -74,11 +74,6 @@ export const LoginFeature = () => {
         )}
       />
 
-      <TextInput
-        containerClassName="mt-5"
-        label="کد ملی"
-        placeholder="مثال: 0123456789"
-      />
       <div className="mt-auto flex flex-col pt-3 gap-4 text-center">
         <div className="text-xs pt-16">
           ورود به شما به معنای موافقت با شرایط استفاده از{" "}
