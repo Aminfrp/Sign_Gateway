@@ -37,7 +37,7 @@ export const VideoVerificationPlaceholderFeature: FC<
         <Button
           className="min-h-12 w-full mt-28"
           variant="outline"
-          onClick={() => setStage(STAGE.NATIONAL_CARD_SERIAL_NUMBER)}
+          onClick={() => setStage(STAGE.OTP)}
         >
           مرحله قبل
         </Button>
