@@ -1,10 +1,13 @@
 import { Collapse } from "@/components";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { STAGE } from "./contract.type";
 import { ContractFeature } from "./ContractFeature";
-import { ContractInfoFeature } from "./ContractInfoFeature";
-import { SubmitVideoVerification } from "./SubmitVideoVerification";
-import { VideoVerificationPlaceholderFeature } from "./VideoVerificationPlaceholderFeature";
+
+const ContractInfoFeature = lazy(() => import("./ContractInfoFeature"));
+const VideoVerificationPlaceholderFeature = lazy(
+  () => import("./VideoVerificationPlaceholderFeature")
+);
+const SubmitVideoVerification = lazy(() => import("./SubmitVideoVerification"));
 
 export const HomeFeature = () => {
   const [stage, setStage] = useState<STAGE>(STAGE.OTP);
@@ -35,7 +38,9 @@ export const HomeFeature = () => {
   return (
     <div className="my-4 grid lg:grid-cols-12 md:grid-cols-1 gap-5 flex-1">
       <ContractFeature />
-      {renderStages(stage)}
+      <Suspense fallback={<div>loading...</div>}>
+        {renderStages(stage)}
+      </Suspense>
       <Collapse className="lg:col-span-8 xs:col-span-12" />
     </div>
   );

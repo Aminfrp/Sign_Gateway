@@ -5,7 +5,7 @@ import { CiPlay1, CiStop1 } from "react-icons/ci";
 import { IoTrashOutline } from "react-icons/io5";
 import { STAGE, SubmitVideoVerificationProps } from "./contract.type";
 
-export const SubmitVideoVerification: React.FC<SubmitVideoVerificationProps> = (
+const SubmitVideoVerification: React.FC<SubmitVideoVerificationProps> = (
   props
 ) => {
   const { videoBlob, setStage, setVideoBlob } = props;
@@ -124,3 +124,5 @@ export const SubmitVideoVerification: React.FC<SubmitVideoVerificationProps> = (
     </div>
   );
 };
+
+export default SubmitVideoVerification;

@@ -5,7 +5,7 @@ import { SlRefresh } from "react-icons/sl";
 import { Button, Card, Datepicker, TextInput } from "../../components";
 import { ContractInfoProps, STAGE } from "./contract.type";
 
-export const ContractInfoFeature: FC<ContractInfoProps> = (props) => {
+const ContractInfoFeature: FC<ContractInfoProps> = (props) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleDialogClose = () => {
@@ -112,7 +112,7 @@ export const ContractInfoFeature: FC<ContractInfoProps> = (props) => {
               props.setStage(STAGE.VERIFICATION_VIDEO_PLACEHOLDER);
             }}
           >
-            امضای سند
+            اعتبارسنجی و امضای سند
           </Button>
         </div>
       </Card>
@@ -148,3 +148,5 @@ export const ContractInfoFeature: FC<ContractInfoProps> = (props) => {
     </div>
   );
 };
+
+export default ContractInfoFeature;

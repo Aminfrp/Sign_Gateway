@@ -6,9 +6,9 @@ import { HiOutlineVideoCamera } from "react-icons/hi2";
 import { VideoVerificationFeature } from "./VideoVerificationFeature";
 import { STAGE, VideoVerificationFeatureProps } from "./contract.type";
 
-export const VideoVerificationPlaceholderFeature: FC<
-  VideoVerificationFeatureProps
-> = (props) => {
+const VideoVerificationPlaceholderFeature: FC<VideoVerificationFeatureProps> = (
+  props
+) => {
   const { setVideoBlob, setStage } = props;
   const [showVideoVerificationDialog, setShowVideoVerificationDialog] =
     useState(false);
@@ -95,3 +95,5 @@ export const VideoVerificationPlaceholderFeature: FC<
     </div>
   );
 };
+
+export default VideoVerificationPlaceholderFeature;
