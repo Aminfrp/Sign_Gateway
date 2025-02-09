@@ -8,7 +8,7 @@ import { STAGE, SubmitVideoVerificationProps } from "./contract.type";
 export const SubmitVideoVerification: React.FC<SubmitVideoVerificationProps> = (
   props
 ) => {
-  const { videoBlob, setStage } = props;
+  const { videoBlob, setStage, setVideoBlob } = props;
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [isPlay, setIsPlay] = useState(false);
 
@@ -19,6 +19,12 @@ export const SubmitVideoVerification: React.FC<SubmitVideoVerificationProps> = (
       videoRef.current?.pause();
     }
   }, [isPlay]);
+
+  useEffect(() => {
+    if (!videoBlob) {
+      setStage(STAGE.VERIFICATION_VIDEO_PLACEHOLDER);
+    }
+  }, [videoBlob]);
 
   return (
     <div className="lg:col-span-4 xs:col-span-12 flex flex-col gap-3">
@@ -51,7 +57,10 @@ export const SubmitVideoVerification: React.FC<SubmitVideoVerificationProps> = (
               )}
               <p>مشاهده ویدیو</p>
             </div>
-            <div className="flex justify-center px-2 py-1 border border-dashed items-center rounded-lg text-xs">
+            <div
+              className="flex justify-center px-2 py-1 border border-dashed items-center rounded-lg text-xs"
+              onClick={() => setVideoBlob(null)}
+            >
               حذف ویدئو <IoTrashOutline />
             </div>
           </div>

@@ -26,7 +26,11 @@ export const HomeFeature = () => {
         );
       case STAGE.VERIFICATION_VIDEO:
         return (
-          <SubmitVideoVerification videoBlob={videoBlob} setStage={setStage} />
+          <SubmitVideoVerification
+            videoBlob={videoBlob}
+            setStage={setStage}
+            setVideoBlob={setVideoBlob}
+          />
         );
     }
   };

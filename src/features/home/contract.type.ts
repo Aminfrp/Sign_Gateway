@@ -8,6 +8,7 @@ export enum STAGE {
 export type SubmitVideoVerificationProps = {
   videoBlob: Blob | null;
   setStage: React.Dispatch<React.SetStateAction<STAGE>>;
+  setVideoBlob: React.Dispatch<React.SetStateAction<Blob | null>>;
 };
 
 export type VideoVerificationFeatureProps = {
