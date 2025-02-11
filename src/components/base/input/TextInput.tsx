@@ -18,7 +18,7 @@ export const TextInput = forwardRef<
         {label}
       </label>
       <Input
-        className={`mt-3 min-h-14  !placeholder-gray-500 !placeholder-opacity-50  ${props.className}`}
+        className={`mt-3 min-h-14  !placeholder-gray-500 !placeholder-opacity-50 rounded-2xl  ${props.className}`}
         id={rest.id || customId}
         ref={ref}
         {...rest}

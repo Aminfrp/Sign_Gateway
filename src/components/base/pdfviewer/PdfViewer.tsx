@@ -70,9 +70,10 @@ export const PdfViewer = ({ url, status }: PdfDataType) => {
             <Page
               pageNumber={pageNumber}
               renderTextLayer={false}
-              width={containerDimensions.width - 40} // Adjust the width dynamically
-              height={containerDimensions.height - 40} // Adjust height to fit the container
+              width={containerDimensions.width - 40}
+              height={containerDimensions.height - 40}
               renderAnnotationLayer={false}
+              className="flex justify-center items-center"
             />
           </Document>
         </div>
