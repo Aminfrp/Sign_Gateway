@@ -5,7 +5,6 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { variables } from "@/constants";
 import { useHookForm } from "@/hooks";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { EditIcon, RefreshCwIcon } from "lucide-react";
@@ -16,8 +15,10 @@ import { v4 as uuid } from "uuid";
 import * as yup from "yup";
 import { useAuthorize, useHandshake, useToken, useVerify } from "./auth.hooks";
 import { verifySchema } from "./auth.schema";
+import { APP_CONFIG } from "@/constants";
 
 export const OTPFeature = () => {
+  const {BASE_URL, CLIENT_ID, SCOPE} = APP_CONFIG
   const navigate = useNavigate();
   const deviceId = uuid();
   const { mutateAsync: handleVerifyOTP, status: verifyStatus } = useVerify();
@@ -58,13 +59,13 @@ export const OTPFeature = () => {
 
   const onSubmit = async (values: yup.InferType<typeof verifySchema>) => {
     await handleVerifyOTP({
-      businessClientId: variables.clientId,
+      businessClientId: CLIENT_ID,
       mobile: localStorage.getItem("phoneNumber") as string,
       code: values.code,
       keyId: localStorage.getItem("keyId") as string,
     }).then((res) =>
       handleToken({
-        businessClientId: variables.clientId,
+        businessClientId: CLIENT_ID,
         mobile: localStorage.getItem("phoneNumber") as string,
         keyId: localStorage.getItem("keyId") as string,
         code: res?.result[0].code,
@@ -80,7 +81,7 @@ export const OTPFeature = () => {
     setTimerActive(true);
     localStorage.setItem("expire_in", "60");
     await handleHandshake({
-      businessClientId: variables.clientId,
+      businessClientId: CLIENT_ID,
       device_type: "unknown",
       device_uid: deviceId,
     })
@@ -88,10 +89,10 @@ export const OTPFeature = () => {
         localStorage.setItem("keyId", res?.result[0].keyId as string);
 
         return handleAuthorize({
-          businessClientId: variables.clientId,
+          businessClientId: CLIENT_ID,
           keyId: res?.result[0].keyId as string,
           mobile: localStorage.getItem("phoneNumber") as string,
-          scope: variables.scope,
+          scope: SCOPE,
         });
       })
       .then((res) => {

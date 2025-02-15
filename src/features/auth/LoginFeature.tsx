@@ -1,6 +1,6 @@
 import { PodIcon } from "@/assets/icons";
 import { Button, TextInput } from "@/components";
-import { variables } from "@/constants";
+import { APP_CONFIG } from "@/constants";
 import { useHookForm } from "@/hooks";
 import { Controller } from "react-hook-form";
 import { useNavigate } from "react-router";
@@ -17,6 +17,8 @@ export const LoginFeature = () => {
   } = useHookForm<typeof schema>(schema, {
     phoneNumber: localStorage.getItem("phoneNumber") || "",
   });
+
+  const { CLIENT_ID, SCOPE } = APP_CONFIG;
   const { mutateAsync: handleHandshake, status: handshakeStatus } =
     useHandshake();
   const { mutateAsync: handleAuthorize, status: authorizeStatus } =
@@ -26,7 +28,7 @@ export const LoginFeature = () => {
   const navigate = useNavigate();
   const onSubmit = async (value: yup.InferType<typeof schema>) => {
     await handleHandshake({
-      businessClientId: variables.clientId,
+      businessClientId: CLIENT_ID,
       device_type: "unknown",
       device_uid: deviceId,
     })
@@ -34,10 +36,10 @@ export const LoginFeature = () => {
         localStorage.setItem("keyId", res?.result[0].keyId as string);
 
         return handleAuthorize({
-          businessClientId: variables.clientId,
+          businessClientId: CLIENT_ID,
           keyId: res?.result[0].keyId as string,
           mobile: value.phoneNumber,
-          scope: variables.scope,
+          scope: SCOPE,
         });
       })
       .then((res) => {

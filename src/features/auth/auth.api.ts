@@ -1,4 +1,5 @@
 import { api } from "@/services";
+import axios, { AxiosResponse } from "axios";
 import {
   AuthorizeRequestType,
   AuthorizeResponseType,
@@ -13,25 +14,37 @@ import {
 export const services = {
   handshakeService: (data: HandshakeRequestType) =>
     api
-      .post<HandshakeRequestType, HandshakeResponseType>("handshake", data)
+      .post<HandshakeRequestType, AxiosResponse<HandshakeResponseType>>(
+        "https://sandbox.sandpod.ir/srv/cms-sandbox/api/cms/users/handshake",
+        data
+      )
       .then((res) => res.data),
   authorizeService: async (data: AuthorizeRequestType) => {
-    const response = await api.post<
+    const response = await axios.post<
       AuthorizeRequestType,
-      AuthorizeResponseType
-    >("authorize", data);
+      AxiosResponse<AuthorizeResponseType>
+    >(
+      "https://sandbox.sandpod.ir/srv/cms-sandbox/api/cms/users/authorize",
+      data
+    );
     return response.data;
   },
   verifyService: async (data: VerifyRequestType) => {
-    const response = await api.post<VerifyRequestType, VerifyResponseType>(
-      "authorize/verify",
+    const response = await axios.post<
+      VerifyRequestType,
+      AxiosResponse<VerifyResponseType>
+    >(
+      "https://sandbox.sandpod.ir/srv/cms-sandbox/api/cms/users/authorize/verify",
       data
     );
     return response.data;
   },
   tokenService: async (data: TokenRequestType) => {
-    const response = await api.post<TokenRequestType, TokenResponseType>(
-      "authorize/token",
+    const response = await axios.post<
+      TokenRequestType,
+      AxiosResponse<TokenResponseType>
+    >(
+      "https://sandbox.sandpod.ir/srv/cms-sandbox/api/cms/users/authorize/token",
       data
     );
     return response.data;

@@ -1,6 +1,8 @@
+import { APP_CONFIG } from "@/constants";
 import axios, { AxiosInstance } from "axios";
 
-const baseURL = import.meta.env.VITE_APP_BASE_URL;
+const baseURL = APP_CONFIG.BASE_URL;
+
 const axiosInstance = axios.create({
   baseURL,
 });
