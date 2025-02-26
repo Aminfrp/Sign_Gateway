@@ -1,6 +1,8 @@
 import FullPageLoading from "@/components/base/fullPageLoading/FullPageLoading";
 import { AuthLayout } from "@/components/layouts/auth/AuthLayout";
 import { ROUTES } from "@/constants";
+import { useAutoLogin } from "@/hooks";
+import { useGetContractContent } from "@/hooks/useGetContractContent";
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import { Layout } from "../components";
@@ -8,7 +10,11 @@ import { Layout } from "../components";
 const Login = lazy(() => import("@/views/Login"));
 const OTP = lazy(() => import("@/views/OTP"));
 const Home = lazy(() => import("@/views/Home"));
+
 const Router = () => {
+  const a = useGetContractContent();
+
+  useAutoLogin();
   return (
     <BrowserRouter>
       <Suspense fallback={<FullPageLoading />}>

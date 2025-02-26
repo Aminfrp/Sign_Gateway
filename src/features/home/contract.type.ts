@@ -24,3 +24,28 @@ export type NationalCardSerialProps = {
 export type ContractInfoProps = {
   setStage: React.Dispatch<React.SetStateAction<STAGE>>;
 };
+
+// services types
+type ContractBody =  {
+  result: {
+    id: number;
+    successfulDeepLink: string;
+    unsuccessfulDeepLink: string;
+    activeTime: number | null;
+    expirationTime: number;
+    signerName: string;
+    initiatorName: string;
+    title: string;
+    description: string;
+    downloadLink: string;
+  };
+}
+
+export type ContractResponseFromLink = {
+  refId: string;
+  statusCode: string;
+  message: string;
+  errorCode: number;
+  errorMessage: string | null;
+  body: ContractBody;
+};

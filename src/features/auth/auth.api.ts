@@ -25,7 +25,13 @@ export const services = {
       AxiosResponse<AuthorizeResponseType>
     >(
       "https://sandbox.sandpod.ir/srv/cms-sandbox/api/cms/users/authorize",
-      data
+      data,
+      {
+        headers: {
+          scopes:
+            "profile login legal_nationalcode legal_birthdate storage_write legal phone key key_write key_sign certificate_write certificate",
+        },
+      }
     );
     return response.data;
   },
