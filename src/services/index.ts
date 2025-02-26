@@ -13,9 +13,9 @@ export class RequestApi {
     this.instance = instance;
   }
 
-  get = <T>(url: string, options?: AxiosRequestConfig) =>
-    this.instance.get<T>(url, options);
-  post = <T, K>(url: string, data: T) => this.instance.post<K>(url, data);
+  get = (url: string) => this.instance.get(url);
+  post = <T, K>(url: string, data: T, options?: AxiosRequestConfig) =>
+    this.instance.post<K>(url, data, options);
 }
 
 export const api = new RequestApi(axiosInstance);

@@ -6,7 +6,7 @@ import { Controller } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { v4 as uuid } from "uuid";
 import * as yup from "yup";
-import { useAuthorize, useHandshake } from "./auth.hooks";
+import { useAuthorize, useGetIP, useHandshake } from "./auth.hooks";
 import { schema } from "./auth.schema";
 
 export const LoginFeature = () => {
@@ -23,29 +23,32 @@ export const LoginFeature = () => {
     useHandshake();
   const { mutateAsync: handleAuthorize, status: authorizeStatus } =
     useAuthorize();
+  const { mutateAsync: handleGetIP } = useGetIP();
 
   const deviceId = uuid();
   const navigate = useNavigate();
+
   const onSubmit = async (value: yup.InferType<typeof schema>) => {
+    const device_client_ip = await handleGetIP();
     await handleHandshake({
-      businessClientId: CLIENT_ID,
       device_type: "unknown",
       device_uid: deviceId,
+      device_client_ip: device_client_ip.ip,
     })
       .then((res) => {
-        localStorage.setItem("keyId", res?.result[0].keyId as string);
-
+        localStorage.setItem("keyId", res?.body.keyId as string);
         return handleAuthorize({
-          businessClientId: CLIENT_ID,
-          keyId: res?.result[0].keyId as string,
-          mobile: value.phoneNumber,
           scope: SCOPE,
+          identityType: "phone_number",
+          response_type: "code",
+          keyId: res?.body.keyId as string,
+          mobile: value.phoneNumber,
         });
       })
       .then((res) => {
         localStorage.setItem(
           "expire_in",
-          ("" + res?.result[0].expires_in) as string
+          ("" + res?.body.expires_in) as string
         );
         localStorage.setItem("phoneNumber", value.phoneNumber);
         navigate("/auth/otp");

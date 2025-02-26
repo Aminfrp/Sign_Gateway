@@ -3,7 +3,7 @@ import { AuthResponse } from "@/types";
 // handshake
 export type HandshakeRequestType = {
   device_uid: string;
-  businessClientId: string;
+  device_client_ip: string;
   device_type: string;
 };
 
@@ -46,10 +46,11 @@ export type HandshakeResponseType = AuthResponse<HandshakeResponse>;
 
 // authorize
 export type AuthorizeRequestType = {
-  keyId: string;
-  businessClientId: string;
-  mobile: string;
+  identityType: string;
+  response_type: string;
   scope: string;
+  keyId: string;
+  mobile: string;
 };
 
 type AuthorizeResponse = {
