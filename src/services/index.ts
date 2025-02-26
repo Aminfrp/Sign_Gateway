@@ -1,5 +1,5 @@
 import { APP_CONFIG } from "@/constants";
-import axios, { AxiosInstance } from "axios";
+import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
 const baseURL = APP_CONFIG.BASE_URL;
 
@@ -14,7 +14,8 @@ export class RequestApi {
   }
 
   get = (url: string) => this.instance.get(url);
-  post = <T, K>(url: string, data: T) => this.instance.post<K>(url, data);
+  post = <T, K>(url: string, data: T, options?: AxiosRequestConfig) =>
+    this.instance.post<K>(url, data, options);
 }
 
 export const api = new RequestApi(axiosInstance);

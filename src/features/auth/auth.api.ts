@@ -14,18 +14,27 @@ import {
 export const services = {
   handshakeService: (data: HandshakeRequestType) =>
     api
-      .post<HandshakeRequestType, AxiosResponse<HandshakeResponseType>>(
-        "https://sandbox.sandpod.ir/srv/cms-sandbox/api/cms/users/handshake",
+      .post<HandshakeRequestType, HandshakeResponseType>(
+        "/api/auth/handshake",
         data
       )
       .then((res) => res.data),
+
+  getIPService: () =>
+    axios
+      .get<{ ip: string }>("https://api.ipify.org/?format=json")
+      .then((res) => res.data),
   authorizeService: async (data: AuthorizeRequestType) => {
-    const response = await axios.post<
-      AuthorizeRequestType,
-      AxiosResponse<AuthorizeResponseType>
-    >(
-      "https://sandbox.sandpod.ir/srv/cms-sandbox/api/cms/users/authorize",
-      data
+    const payload = {
+      identityType: data.identityType,
+      response_type: data.response_type,
+      scope: data.scope,
+    };
+    type AuthorizeRequest = Omit<AuthorizeRequestType, "keyId" | "mobile">;
+    const response = await api.post<AuthorizeRequest, AuthorizeResponseType>(
+      `/api/auth/authorize/${data.mobile}`,
+      payload,
+      { headers: { keyId: data.keyId } }
     );
     return response.data;
   },

@@ -1,11 +1,8 @@
-export type AuthResponse<T> =  {
-  referenceNumber: number;
-  hasError: boolean;
-  errorCode: number;
+export type AuthResponse<T> = {
   refId: string;
-  message: any[]; 
-  count: number;
-  aggregations: number;
-  result: T[];
-  metaData: any[];
-}
+  statusCode: string;
+  message: string;
+  errorCode: number;
+  errorMessage: string | null;
+  body: T;
+};

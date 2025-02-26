@@ -20,6 +20,13 @@ export const useHandshake = () => {
   return { ...handshakeMutation };
 };
 
+export const useGetIP = () => {
+  const getIPMutation = useMutation<{ ip: string }, Error>({
+    mutationFn: services.getIPService,
+  });
+  return { ...getIPMutation };
+};
+
 export const useAuthorize = () => {
   const handshakeMutation = useMutation<
     AuthorizeResponseType,
@@ -39,10 +46,8 @@ export const useVerify = () => {
 };
 
 export const useToken = () => {
-  const tokenMutation = useMutation<
-    TokenResponseType,
-    Error,
-    TokenRequestType
-  >({ mutationFn: services.tokenService });
+  const tokenMutation = useMutation<TokenResponseType, Error, TokenRequestType>(
+    { mutationFn: services.tokenService }
+  );
   return { ...tokenMutation };
 };
