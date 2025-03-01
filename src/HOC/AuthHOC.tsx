@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router";
 
 const checkAuth = (): boolean => {
@@ -8,11 +8,11 @@ const checkAuth = (): boolean => {
 function withAuth<T extends object>(WrappedComponent: React.ComponentType<T>) {
   return (props: T) => {
     const navigate = useNavigate();
-    useEffect(() => {
-      if (!checkAuth()) {
-        navigate("/auth/login", { replace: true });
-      }
-    }, []);
+    // useEffect(() => {
+    //   if (!checkAuth()) {
+    //     navigate("/auth/login", { replace: true });
+    //   }
+    // }, []);
 
     return <WrappedComponent {...props} />;
   };

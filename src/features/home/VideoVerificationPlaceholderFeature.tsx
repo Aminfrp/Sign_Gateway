@@ -29,7 +29,12 @@ const VideoVerificationPlaceholderFeature: FC<VideoVerificationFeatureProps> = (
             </div>
           </div>
         </div>
-        <div className="rounded-full border max-w-72 aspect-square  flex justify-center items-center flex-col mx-auto mt-5 gap-3 cursor-pointer">
+        <div
+          className="rounded-full border max-w-72 aspect-square  flex justify-center items-center flex-col mx-auto mt-5 gap-3 cursor-pointer"
+          onClick={() => {
+            setShowVideoVerificationDialog(true);
+          }}
+        >
           <div>
             <HiOutlineVideoCamera size={25} className="text-slate-500" />
           </div>

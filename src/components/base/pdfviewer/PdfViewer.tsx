@@ -1,15 +1,13 @@
-import { Button } from "@/components/ui/button";
-import { MoveLeftIcon, MoveRightIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import "react-pdf/dist/esm/Page/TextLayer.css";
 import { PdfDataType, StatusEnum } from "./pdf-viewer.types";
+
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 export const PdfViewer = ({ url, status }: PdfDataType) => {
   const [numPages, setNumPages] = useState<number>(0);
-  const [pageNumber, setPageNumber] = useState(1);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const getContainerDimensions = () => {
@@ -42,20 +40,13 @@ export const PdfViewer = ({ url, status }: PdfDataType) => {
 
   function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
     setNumPages(numPages);
-    setPageNumber(1);
-  }
-
-  function changePage(offset: number) {
-    if (pageNumber >= 1) {
-      setPageNumber((prevPageNumber) => prevPageNumber + offset);
-    }
   }
 
   const render = {
     [StatusEnum.pending]: <div>Loading ...</div>,
     [StatusEnum.success]: (
       <>
-        <div ref={containerRef} className="w-full h-full">
+        <div ref={containerRef} className="w-full h-full overflow-auto">
           <Document
             file={url}
             onLoadError={(error) => console.error(error)}
@@ -67,34 +58,20 @@ export const PdfViewer = ({ url, status }: PdfDataType) => {
               </p>
             }
           >
-            <Page
-              pageNumber={pageNumber}
-              renderTextLayer={false}
-              width={containerDimensions.width - 40}
-              height={containerDimensions.height - 40}
-              renderAnnotationLayer={false}
-              className="flex justify-center items-center"
-            />
+            {/* Render all pages */}
+            {Array.from({ length: numPages }, (_, pageIndex) => (
+              <div key={pageIndex} className="my-4">
+                <Page
+                  pageNumber={pageIndex + 1}
+                  renderTextLayer={false}
+                  width={containerDimensions.width - 40}
+                  height={containerDimensions.height - 40}
+                  renderAnnotationLayer={false}
+                  className="flex justify-center items-center"
+                />
+              </div>
+            ))}
           </Document>
-        </div>
-        <div className="flex w-full justify-center items-center gap-5 select-none">
-          <Button
-            variant={pageNumber === numPages ? "outline" : "default"}
-            className="cursor-pointer rounded-full border py-0 size-20 max-w-8 w-8 max-h-8"
-            onClick={() => changePage(+1)}
-            disabled={pageNumber === numPages}
-          >
-            <MoveRightIcon />
-          </Button>
-          <span className="font-bold text-xl">{pageNumber}</span>
-          <Button
-            variant={pageNumber === 1 ? "outline" : "default"}
-            className="cursor-pointer rounded-full border py-0 size-20 max-w-8 w-8 max-h-8"
-            onClick={() => changePage(-1)}
-            disabled={pageNumber === 1}
-          >
-            <MoveLeftIcon />
-          </Button>
         </div>
       </>
     ),
