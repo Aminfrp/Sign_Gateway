@@ -1,12 +1,10 @@
 import { api } from "@/services";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import {
   AuthorizeRequestType,
   AuthorizeResponseType,
   HandshakeRequestType,
   HandshakeResponseType,
-  TokenRequestType,
-  TokenResponseType,
   VerifyRequestType,
   VerifyResponseType,
 } from "./auth.types";
@@ -29,32 +27,24 @@ export const services = {
       identityType: data.identityType,
       response_type: data.response_type,
       scope: data.scope,
+      keyId: data.keyId,
     };
-    type AuthorizeRequest = Omit<AuthorizeRequestType, "keyId" | "mobile">;
+    type AuthorizeRequest = Omit<AuthorizeRequestType, "mobile">;
     const response = await api.post<AuthorizeRequest, AuthorizeResponseType>(
       `/api/auth/authorize/${data.mobile}`,
-      payload,
-      { headers: { keyId: data.keyId } }
+      payload
     );
     return response.data;
   },
   verifyService: async (data: VerifyRequestType) => {
-    const response = await axios.post<
-      VerifyRequestType,
-      AxiosResponse<VerifyResponseType>
-    >(
-      "https://sandbox.sandpod.ir/srv/cms-sandbox/api/cms/users/authorize/verify",
-      data
-    );
-    return response.data;
-  },
-  tokenService: async (data: TokenRequestType) => {
-    const response = await axios.post<
-      TokenRequestType,
-      AxiosResponse<TokenResponseType>
-    >(
-      "https://sandbox.sandpod.ir/srv/cms-sandbox/api/cms/users/authorize/token",
-      data
+    const payload = {
+      otp: data.otp,
+      keyId: data.keyId,
+    };
+    type VerifyRequest = Omit<VerifyRequestType, "mobile">;
+    const response = await api.post<VerifyRequest, VerifyResponseType>(
+      `/api/auth/verify/${data.mobile}`,
+      payload
     );
     return response.data;
   },

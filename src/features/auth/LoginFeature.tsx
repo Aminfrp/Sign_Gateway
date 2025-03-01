@@ -23,7 +23,7 @@ export const LoginFeature = () => {
     useHandshake();
   const { mutateAsync: handleAuthorize, status: authorizeStatus } =
     useAuthorize();
-  const { mutateAsync: handleGetIP } = useGetIP();
+  const { mutateAsync: handleGetIP, status: getIpStatus } = useGetIP();
 
   const deviceId = uuid();
   const navigate = useNavigate();
@@ -92,10 +92,13 @@ export const LoginFeature = () => {
           disabled={
             authorizeStatus === "pending" ||
             handshakeStatus === "pending" ||
+            getIpStatus === "pending" ||
             !isValid
           }
           isLoading={
-            authorizeStatus === "pending" || handshakeStatus === "pending"
+            authorizeStatus === "pending" ||
+            handshakeStatus === "pending" ||
+            getIpStatus === "pending"
           }
         >
           ورود به درگاه امضا{" "}

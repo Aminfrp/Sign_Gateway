@@ -5,6 +5,7 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { APP_CONFIG } from "@/constants";
 import { useHookForm } from "@/hooks";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { EditIcon, RefreshCwIcon } from "lucide-react";
@@ -13,16 +14,14 @@ import { Controller } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
 import { v4 as uuid } from "uuid";
 import * as yup from "yup";
-import { useAuthorize, useHandshake, useToken, useVerify } from "./auth.hooks";
+import { useAuthorize, useGetIP, useHandshake, useVerify } from "./auth.hooks";
 import { verifySchema } from "./auth.schema";
-import { APP_CONFIG } from "@/constants";
 
 export const OTPFeature = () => {
-  const {BASE_URL, CLIENT_ID, SCOPE} = APP_CONFIG
+  const { BASE_URL, CLIENT_ID, SCOPE } = APP_CONFIG;
   const navigate = useNavigate();
   const deviceId = uuid();
   const { mutateAsync: handleVerifyOTP, status: verifyStatus } = useVerify();
-  const { mutateAsync: handleToken, status: tokenStatus } = useToken();
   const {
     handleSubmit,
     control,
@@ -30,6 +29,8 @@ export const OTPFeature = () => {
   } = useHookForm<typeof verifySchema>(verifySchema, {
     code: "",
   });
+  const { mutateAsync: handleGetIP, status: getIpStatus } = useGetIP();
+
   const { mutateAsync: handleHandshake, status: handshakeStatus } =
     useHandshake();
   const { mutateAsync: handleAuthorize, status: authorizeStatus } =
@@ -59,46 +60,40 @@ export const OTPFeature = () => {
 
   const onSubmit = async (values: yup.InferType<typeof verifySchema>) => {
     await handleVerifyOTP({
-      businessClientId: CLIENT_ID,
       mobile: localStorage.getItem("phoneNumber") as string,
-      code: values.code,
+      otp: values.code,
       keyId: localStorage.getItem("keyId") as string,
-    }).then((res) =>
-      handleToken({
-        businessClientId: CLIENT_ID,
-        mobile: localStorage.getItem("phoneNumber") as string,
-        keyId: localStorage.getItem("keyId") as string,
-        code: res?.result[0].code,
-      }).then((res) => {
-        localStorage.setItem("token", res?.result[0].access_token);
-        navigate("/");
-      })
-    );
+    }).then((res) => {
+      localStorage.setItem("token", res?.body.access_token);
+      navigate("/");
+    });
   };
 
   const handleResendCode = async () => {
     setExpireIn(60);
     setTimerActive(true);
     localStorage.setItem("expire_in", "60");
+    const device_client_ip = await handleGetIP();
     await handleHandshake({
-      businessClientId: CLIENT_ID,
+      device_client_ip: device_client_ip.ip,
       device_type: "unknown",
       device_uid: deviceId,
     })
       .then((res) => {
-        localStorage.setItem("keyId", res?.result[0].keyId as string);
+        localStorage.setItem("keyId", res?.body.keyId as string);
 
         return handleAuthorize({
-          businessClientId: CLIENT_ID,
-          keyId: res?.result[0].keyId as string,
-          mobile: localStorage.getItem("phoneNumber") as string,
           scope: SCOPE,
+          identityType: "phone_number",
+          response_type: "code",
+          keyId: res?.body.keyId as string,
+          mobile: localStorage.getItem("phoneNumber") as string,
         });
       })
       .then((res) => {
         localStorage.setItem(
           "expire_in",
-          ("" + res?.result[0].expires_in) as string
+          ("" + res?.body.expires_in) as string
         );
         localStorage.setItem(
           "phoneNumber",
@@ -168,10 +163,8 @@ export const OTPFeature = () => {
         </Link>
         <Button
           className="w-full"
-          disabled={
-            !isValid || tokenStatus === "pending" || verifyStatus === "pending"
-          }
-          isLoading={tokenStatus === "pending" || verifyStatus === "pending"}
+          disabled={!isValid || verifyStatus === "pending"}
+          isLoading={verifyStatus === "pending"}
         >
           تایید
         </Button>

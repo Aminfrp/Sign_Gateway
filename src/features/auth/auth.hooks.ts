@@ -5,8 +5,6 @@ import {
   AuthorizeResponseType,
   HandshakeRequestType,
   HandshakeResponseType,
-  TokenRequestType,
-  TokenResponseType,
   VerifyRequestType,
   VerifyResponseType,
 } from "./auth.types";
@@ -43,11 +41,4 @@ export const useVerify = () => {
     VerifyRequestType
   >({ mutationFn: services.verifyService });
   return { ...verifyMutation };
-};
-
-export const useToken = () => {
-  const tokenMutation = useMutation<TokenResponseType, Error, TokenRequestType>(
-    { mutationFn: services.tokenService }
-  );
-  return { ...tokenMutation };
 };

@@ -65,30 +65,15 @@ export type AuthorizeResponseType = AuthResponse<AuthorizeResponse>;
 // verify
 export type VerifyRequestType = {
   keyId: string;
-  businessClientId: string;
   mobile: string;
-  code: string;
+  otp: string;
 };
 
 type VerifyResponse = {
-  code: string;
-  device_uid: string;
-  state: string;
-};
-export type VerifyResponseType = AuthResponse<VerifyResponse>;
-
-// token
-export type TokenRequestType = {
-  keyId: string;
-  businessClientId: string;
-  mobile: string;
-  code: string;
-};
-
-type TokenResponse = {
   access_token: string;
   expires_in: number;
   refresh_token: string;
   token_type: string;
 };
-export type TokenResponseType = AuthResponse<TokenResponse>;
+export type VerifyResponseType = AuthResponse<VerifyResponse>;
+
