@@ -4,8 +4,9 @@ export * from "./card/Card";
 export * from "./checkbox/Checkbox";
 export * from "./collapse/Collapse";
 export * from "./datepicker/Datepicker";
+export * from "./fullPageLoading/FullPageLoading";
 export * from "./input/TextInput";
+export * from "./loading/Loading";
 export * from "./pdfviewer/PdfViewer";
 export * from "./refer/Refer";
 export * from "./selectChips/SelectChips";
-export * from "./fullPageLoading/FullPageLoading"

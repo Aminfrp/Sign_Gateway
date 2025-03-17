@@ -51,6 +51,7 @@ export type AuthorizeRequestType = {
   scope: string;
   keyId: string;
   mobile: string;
+  nationalcode: string;
 };
 
 type AuthorizeResponse = {
@@ -76,4 +77,3 @@ type VerifyResponse = {
   token_type: string;
 };
 export type VerifyResponseType = AuthResponse<VerifyResponse>;
-

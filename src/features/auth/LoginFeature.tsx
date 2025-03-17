@@ -4,6 +4,7 @@ import { APP_CONFIG } from "@/constants";
 import { useHookForm } from "@/hooks";
 import { Controller } from "react-hook-form";
 import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
 import { v4 as uuid } from "uuid";
 import * as yup from "yup";
 import { useAuthorize, useGetIP, useHandshake } from "./auth.hooks";
@@ -16,6 +17,7 @@ export const LoginFeature = () => {
     formState: { errors, isValid },
   } = useHookForm<typeof schema>(schema, {
     phoneNumber: localStorage.getItem("phoneNumber") || "",
+    nationalCode: localStorage.getItem("nationalCode") || "",
   });
 
   const { CLIENT_ID, SCOPE } = APP_CONFIG;
@@ -29,30 +31,36 @@ export const LoginFeature = () => {
   const navigate = useNavigate();
 
   const onSubmit = async (value: yup.InferType<typeof schema>) => {
-    const device_client_ip = await handleGetIP();
-    await handleHandshake({
-      device_type: "unknown",
-      device_uid: deviceId,
-      device_client_ip: device_client_ip.ip,
-    })
-      .then((res) => {
-        localStorage.setItem("keyId", res?.body.keyId as string);
-        return handleAuthorize({
-          scope: SCOPE,
-          identityType: "phone_number",
-          response_type: "code",
-          keyId: res?.body.keyId as string,
-          mobile: value.phoneNumber,
-        });
+    try {
+      const device_client_ip = await handleGetIP();
+      await handleHandshake({
+        device_type: "unknown",
+        device_uid: deviceId,
+        device_client_ip: device_client_ip.ip,
       })
-      .then((res) => {
-        localStorage.setItem(
-          "expire_in",
-          ("" + res?.body.expires_in) as string
-        );
-        localStorage.setItem("phoneNumber", value.phoneNumber);
-        navigate("/auth/otp");
-      });
+        .then((res) => {
+          localStorage.setItem("keyId", res?.body.keyId as string);
+          return handleAuthorize({
+            scope: SCOPE,
+            identityType: "phone_number",
+            response_type: "code",
+            keyId: res?.body.keyId as string,
+            mobile: value.phoneNumber,
+            nationalcode: value.nationalCode,
+          });
+        })
+        .then((res) => {
+          localStorage.setItem(
+            "expire_in",
+            ("" + res?.body.expires_in) as string
+          );
+          localStorage.setItem("phoneNumber", value.phoneNumber);
+          localStorage.setItem("nationalCode", value.nationalCode);
+          navigate("/auth/otp");
+        });
+    } catch (error: any) {
+      toast.error(error.message);
+    }
   };
 
   return (
@@ -79,6 +87,20 @@ export const LoginFeature = () => {
         )}
       />
 
+      <Controller
+        name="nationalCode"
+        control={control}
+        render={({ field }) => (
+          <TextInput
+            containerClassName="mt-5"
+            label="کدملی"
+            placeholder="کد ملی خود را وارد کنید"
+            {...field}
+            error={errors?.nationalCode?.message}
+          />
+        )}
+      />
+
       <div className="mt-auto flex flex-col pt-3 gap-4 text-center">
         <div className="text-xs pt-16">
           ورود به شما به معنای موافقت با شرایط استفاده از{" "}
@@ -92,8 +114,7 @@ export const LoginFeature = () => {
           disabled={
             authorizeStatus === "pending" ||
             handshakeStatus === "pending" ||
-            getIpStatus === "pending" ||
-            !isValid
+            getIpStatus === "pending"
           }
           isLoading={
             authorizeStatus === "pending" ||

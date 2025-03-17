@@ -11,6 +11,7 @@ export const Datepicker: FC<DatepickerType> = (props) => {
     className = "",
     placeholder = "",
     value,
+    error,
     onChange,
   } = props;
   const customId = uuid();
@@ -33,6 +34,13 @@ export const Datepicker: FC<DatepickerType> = (props) => {
         locale="fa"
         onChange={onChange}
       />
+      {error && (
+        <p
+          className={`min-h-8 flex items-center text-xs text-red-600 bg-red-600/5 px-3 rounded-lg mt-3`}
+        >
+          {error}
+        </p>
+      )}
     </div>
   );
 };

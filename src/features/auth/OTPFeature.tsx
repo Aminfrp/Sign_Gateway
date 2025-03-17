@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/input-otp";
 import { APP_CONFIG } from "@/constants";
 import { useHookForm } from "@/hooks";
+import { useSessionStorage } from "@/hooks/useSessionStorage";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { EditIcon, RefreshCwIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -30,11 +31,11 @@ export const OTPFeature = () => {
     code: "",
   });
   const { mutateAsync: handleGetIP, status: getIpStatus } = useGetIP();
-
   const { mutateAsync: handleHandshake, status: handshakeStatus } =
     useHandshake();
   const { mutateAsync: handleAuthorize, status: authorizeStatus } =
     useAuthorize();
+  const [contract] = useSessionStorage("CONTRACT");
 
   const [expireIn, setExpireIn] = useState<number>(
     parseInt(localStorage.getItem("expire_in") || "0")
@@ -65,7 +66,8 @@ export const OTPFeature = () => {
       keyId: localStorage.getItem("keyId") as string,
     }).then((res) => {
       localStorage.setItem("token", res?.body.access_token);
-      navigate("/");
+      localStorage.setItem("refreshToken", res?.body.refresh_token);
+      navigate(`/?sign=${contract.signature}`);
     });
   };
 

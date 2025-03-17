@@ -1,6 +1,6 @@
 import { Collapse } from "@/components";
 import FullPageLoading from "@/components/base/fullPageLoading/FullPageLoading";
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { STAGE } from "./contract.type";
 import { ContractFeature } from "./ContractFeature";
 
@@ -13,6 +13,8 @@ const SubmitVideoVerification = lazy(() => import("./SubmitVideoVerification"));
 export const HomeFeature = () => {
   const [stage, setStage] = useState<STAGE>(STAGE.OTP);
   const [videoBlob, setVideoBlob] = useState<Blob | null>(null);
+
+
 
   const renderStages = (stage: STAGE) => {
     switch (stage) {

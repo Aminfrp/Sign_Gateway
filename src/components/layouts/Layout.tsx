@@ -6,7 +6,7 @@ export const Layout = () => {
   return (
     <>
       <Header />
-      <main dir="rtl" className="flex flex-col flex-1 bg-[#FAFBFC]">
+      <main dir="rtl" className="flex flex-col flex-1 bg-[#FAFBFC] relative">
         <Outlet />
       </main>
       <Footer />

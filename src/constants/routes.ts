@@ -3,4 +3,5 @@ export const ROUTES = {
   OTP: "otp",
   HOME: "/",
   AUTH: "/auth",
+  NOT_FOUND: "/404",
 };

@@ -16,7 +16,6 @@ export type VideoVerificationFeatureProps = {
   setStage: React.Dispatch<React.SetStateAction<STAGE>>;
 };
 
-
 export type NationalCardSerialProps = {
   setStage: React.Dispatch<React.SetStateAction<STAGE>>;
 };
@@ -26,7 +25,7 @@ export type ContractInfoProps = {
 };
 
 // services types
-type ContractBody =  {
+type ContractBody = {
   result: {
     id: number;
     successfulDeepLink: string;
@@ -39,7 +38,7 @@ type ContractBody =  {
     description: string;
     downloadLink: string;
   };
-}
+};
 
 export type ContractResponseFromLink = {
   refId: string;
@@ -48,4 +47,19 @@ export type ContractResponseFromLink = {
   errorCode: number;
   errorMessage: string | null;
   body: ContractBody;
+};
+
+export type CaptchaResponse = {
+  referenceNumber: number;
+  hasError: boolean;
+  errorCode: number;
+  refId: string;
+  message: any[];
+  count: number;
+  aggregations: number;
+  result: {
+    url: string;
+    hash: string;
+  };
+  metaData: any[];
 };

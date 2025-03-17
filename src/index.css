@@ -93,3 +93,40 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.not-found {
+  width: 556px;
+  height: 320px;
+}
+.starry-sky {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.search-icon {
+  display: inline-block;
+}
+.notfound-copy {
+  position: fixed;
+  top: 10%;
+  right: 10%;
+  text-align: right;
+}
+h1 {
+  font-weight: 700;
+  font-size: 40px;
+}
+
+/* change to alternating star opacities */
+.all-stars {
+  animation: blinkblink 7s linear infinite;
+}
+
+@keyframes blinkblink {
+  50% {
+    opacity: 0.1;
+  }
+}
+.moon {
+}

@@ -1,13 +1,14 @@
+import { ROUTES } from "@/constants";
 import { services } from "@/features/home/contract.api";
-import { getSignParam } from "@/lib/utils";
-import { useEffect } from "react";
+import { checkAutoLogin, getSignParam } from "@/lib/utils";
+import { useEffect, useState } from "react";
 import { useSessionStorage } from "./useSessionStorage";
 
-export const useGetContractContent = async () => {
+export const useGetContractContent = () => {
   const [contract, setContract] = useSessionStorage("CONTRACT");
+  const [appLoading, setAppLoading] = useState(false);
 
-  // const navigate = useNavigate();
-  const a = async () => {
+  const manageSignContent = async () => {
     const params = { sign: encodeURIComponent(getSignParam() as string) };
     try {
       const signatureResult = await services.getContract(params);
@@ -21,11 +22,25 @@ export const useGetContractContent = async () => {
       //   TODO: add error type
     } catch (error: any) {
       const data = error && error.data;
+      window.location.href = `${ROUTES.NOT_FOUND}`;
       // TODO: fix debugger
       // debugLogger("error in isDownloadLinkValid: ", error);
     }
   };
+
+  const processData = async () => {
+    setAppLoading(true);
+    try {
+      getSignParam() && (await manageSignContent());
+      if (!localStorage.getItem("token")) await checkAutoLogin();
+    } catch (e) {
+      window.location.href = `${ROUTES.NOT_FOUND}`;
+    }
+    setAppLoading(false);
+  };
   useEffect(() => {
-    a();
-  }, [getSignParam()]);
+    processData();
+  }, []);
+
+  return { appLoading, contract };
 };

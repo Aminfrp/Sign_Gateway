@@ -28,6 +28,7 @@ export const services = {
       response_type: data.response_type,
       scope: data.scope,
       keyId: data.keyId,
+      nationalcode: data.nationalcode,
     };
     type AuthorizeRequest = Omit<AuthorizeRequestType, "mobile">;
     const response = await api.post<AuthorizeRequest, AuthorizeResponseType>(
