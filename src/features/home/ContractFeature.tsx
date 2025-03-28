@@ -1,10 +1,11 @@
 import { useSessionStorage } from "@/hooks/useSessionStorage";
+import { ContractContextType } from "@/types";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { Card, PdfViewer, SelectChips } from "../../components";
 
 export const ContractFeature = () => {
-  const [contract] = useSessionStorage("CONTRACT");
+  const [contract] = useSessionStorage<ContractContextType>("CONTRACT");
   const [isShowDescription, setIsShowDescription] = useState(false);
 
   return (
@@ -20,7 +21,9 @@ export const ContractFeature = () => {
           </h1>
           <div className="bg-green-600/10 text-green-600 rounded-full px-3 py-2 text-sm  xs:order-1 md:order-2">
             زمان باقی‌مانده امضا:{" "}
-            {new Date(contract?.result?.expirationTime).toLocaleString("fa-IR")}
+            {new Date(
+              contract?.result?.expirationTime as number
+            ).toLocaleString("fa-IR")}
           </div>
         </div>
         <div className="flex text-xs text-slate-400 gap-3">

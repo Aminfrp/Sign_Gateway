@@ -38,3 +38,10 @@ export const useUpdateUser = () => {
   });
   return { ...userUpdateMutation };
 };
+
+export const useSignContract = () => {
+  const signContractMutation = useMutation({
+    mutationFn: services.signContract,
+  });
+  return { ...signContractMutation };
+};

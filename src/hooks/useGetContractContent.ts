@@ -1,11 +1,13 @@
 import { ROUTES } from "@/constants";
 import { services } from "@/features/home/contract.api";
 import { checkAutoLogin, getSignParam } from "@/lib/utils";
+import { ContractContextType } from "@/types";
 import { useEffect, useState } from "react";
 import { useSessionStorage } from "./useSessionStorage";
 
 export const useGetContractContent = () => {
-  const [contract, setContract] = useSessionStorage("CONTRACT");
+  const [contract, setContract] =
+    useSessionStorage<ContractContextType>("CONTRACT");
   const [appLoading, setAppLoading] = useState(false);
 
   const manageSignContent = async () => {
@@ -22,7 +24,7 @@ export const useGetContractContent = () => {
       //   TODO: add error type
     } catch (error: any) {
       const data = error && error.data;
-      window.location.href = `${ROUTES.NOT_FOUND}`;
+      // window.location.href = `${ROUTES.NOT_FOUND}`;
       // TODO: fix debugger
       // debugLogger("error in isDownloadLinkValid: ", error);
     }

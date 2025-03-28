@@ -17,6 +17,7 @@ import { v4 as uuid } from "uuid";
 import * as yup from "yup";
 import { useAuthorize, useGetIP, useHandshake, useVerify } from "./auth.hooks";
 import { verifySchema } from "./auth.schema";
+import { ContractContextType } from "@/types";
 
 export const OTPFeature = () => {
   const { BASE_URL, CLIENT_ID, SCOPE } = APP_CONFIG;
@@ -35,7 +36,7 @@ export const OTPFeature = () => {
     useHandshake();
   const { mutateAsync: handleAuthorize, status: authorizeStatus } =
     useAuthorize();
-  const [contract] = useSessionStorage("CONTRACT");
+  const [contract] = useSessionStorage<ContractContextType>("CONTRACT");
 
   const [expireIn, setExpireIn] = useState<number>(
     parseInt(localStorage.getItem("expire_in") || "0")
@@ -67,7 +68,7 @@ export const OTPFeature = () => {
     }).then((res) => {
       localStorage.setItem("token", res?.body.access_token);
       localStorage.setItem("refreshToken", res?.body.refresh_token);
-      navigate(`/?sign=${contract.signature}`);
+      navigate(`/?sign=${contract?.signature as string}`);
     });
   };
 
@@ -90,6 +91,7 @@ export const OTPFeature = () => {
           response_type: "code",
           keyId: res?.body.keyId as string,
           mobile: localStorage.getItem("phoneNumber") as string,
+          nationalcode: localStorage.getItem("nationalCode") as string,
         });
       })
       .then((res) => {

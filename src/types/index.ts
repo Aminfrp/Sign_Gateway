@@ -6,3 +6,22 @@ export type AuthResponse<T> = {
   errorMessage: string | null;
   body: T;
 };
+
+type ContractData = {
+  id: number;
+  successfulDeepLink: string;
+  unsuccessfulDeepLink: string;
+  activeTime: number | null;
+  expirationTime: number;
+  signerName: string;
+  initiatorName: string;
+  title: string;
+  description: string;
+  downloadLink: string;
+  faceVerificationForced: boolean;
+};
+
+export type ContractContextType = {
+  result: ContractData;
+  signature: string;
+};

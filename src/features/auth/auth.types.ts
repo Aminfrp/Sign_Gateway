@@ -54,7 +54,7 @@ export type AuthorizeRequestType = {
   nationalcode: string;
 };
 
-type AuthorizeResponse = {
+export type AuthorizeResponse = {
   expires_in: number;
   identity: string;
   type: string;

@@ -13,6 +13,7 @@ export const Datepicker: FC<DatepickerType> = (props) => {
     value,
     error,
     onChange,
+    disabled = false,
   } = props;
   const customId = uuid();
 
@@ -30,6 +31,7 @@ export const Datepicker: FC<DatepickerType> = (props) => {
         inputAttributes={{
           id: id || customId,
           placeholder,
+          disabled,
         }}
         locale="fa"
         onChange={onChange}

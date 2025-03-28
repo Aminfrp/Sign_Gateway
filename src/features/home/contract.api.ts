@@ -25,10 +25,12 @@ export const services = {
     const response = await api.get(`/api/security/user-latest-inquiry`);
     return await handleResponse(response);
   },
+
   getUserMe: async () => {
     const response = await api.get(`/api/security/user-info`);
     return await handleResponse(response);
   },
+  
   updateUser: async (data: any) => {
     const options = {
       headers: {
@@ -36,5 +38,19 @@ export const services = {
       },
     };
     return await api.post("/api/security/update-user", data, options);
+  },
+
+  signContract: async (payload: { data: string; accessToken: string }) => {
+    const options = {
+      headers: {
+        "business-code": APP_CONFIG.BUSINESS_CODE,
+        "access-token": payload.accessToken,
+      },
+    };
+    return await api.post(
+      `/api/gateway/sign?sign=${payload.data}`,
+      undefined,
+      options
+    );
   },
 };

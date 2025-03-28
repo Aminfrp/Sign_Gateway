@@ -8,5 +8,6 @@ export type DatepickerType = {
   placeholder?: string;
   onChange: ((args: onDatePickerChangePayload) => void) | undefined;
   value: onDatePickerChangePayload | null;
-  error?:string
+  error?: string;
+  disabled?:boolean
 };

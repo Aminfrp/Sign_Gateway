@@ -1,10 +1,11 @@
 import FullPageLoading from "@/components/base/fullPageLoading/FullPageLoading";
 import { AuthLayout } from "@/components/layouts/auth/AuthLayout";
 import { ROUTES } from "@/constants";
+import { useGetUserInfo } from "@/features/home/contract.hooks";
 import { useAutoLogin } from "@/hooks";
 import { useGetContractContent } from "@/hooks/useGetContractContent";
 import { NotFound } from "@/views/NotFound";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import { Layout } from "../components";
 

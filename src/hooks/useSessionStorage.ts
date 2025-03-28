@@ -1,24 +1,26 @@
 import { getSessionStorage, setSessionStorage } from "@/lib/utils";
 import { useState } from "react";
 
-export const useSessionStorage = <T>(key: string, initialValue?: T) => {
-  const [storedValue, setStoredValue] = useState(() => {
+export const useSessionStorage = <T>(
+  key: string,
+  initialValue?: T
+): [T | undefined, (value: T) => void] => {
+  const [storedValue, setStoredValue] = useState<T | undefined>(() => {
     try {
       const item = getSessionStorage(key);
-      return item ? item : initialValue;
+      return item !== null ? item : initialValue;
     } catch (error) {
-      // debugLogger(error);
+      console.error(error);
       return initialValue;
     }
   });
 
-  const setValue = <T>(value: T) => {
+  const setValue = (value: T) => {
     try {
       setStoredValue(value);
       setSessionStorage(key, value);
     } catch (error) {
-      // debugLogger(error);
-      console.log(error);
+      console.error(error);
     }
   };
 
