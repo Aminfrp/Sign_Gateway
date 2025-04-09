@@ -7,30 +7,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const handleResponse = <T>(response: AxiosResponse) => {
-  if (response && response.status >= 200 && response.status < 300) {
-    if (
-      response &&
-      response.data &&
-      response.data.statusCode === "OK" &&
-      response.data.errorMessage === null &&
-      response.data.body
-    ) {
-      return Promise.resolve(response.data.body);
-    } else if (
-      response &&
-      response.data &&
-      response.data.statusCode === "ACCEPTED"
-    ) {
-      return Promise.resolve(response.data.body);
-    } else {
-      return Promise.reject(response.data.errorMessage);
-    }
-  } else {
-    return Promise.reject(response.data);
-  }
-};
-
 export const convertJsonToQueryString = <T extends Record<string, string>>(
   json: T
 ) => {

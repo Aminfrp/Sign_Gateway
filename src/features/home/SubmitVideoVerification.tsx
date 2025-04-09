@@ -1,17 +1,25 @@
-import { GreenVerifyIcon, UserPrimaryIcon } from "@/assets/icons";
+import { UserPrimaryIcon } from "@/assets/icons";
 import { Button, Card } from "@/components";
 import { useEffect, useRef, useState } from "react";
 import { CiPlay1, CiStop1 } from "react-icons/ci";
 import { IoTrashOutline } from "react-icons/io5";
-import { STAGE, SubmitVideoVerificationProps } from "./contract.type";
 import { ContractSignStatus } from "./components/ContractSignStatus";
+import { services } from "./contract.api";
+import {
+  useFaceVerification,
+  useFaceVerificationInquiry,
+} from "./contract.hooks";
+import { STAGE, SubmitVideoVerificationProps } from "./contract.type";
 
 const SubmitVideoVerification: React.FC<SubmitVideoVerificationProps> = (
   props
 ) => {
-  const { videoBlob, setStage, setVideoBlob } = props;
+  const { videoBlob, setStage, setVideoBlob, trackerId } = props;
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [isPlay, setIsPlay] = useState(false);
+  const { mutateAsync: handleFaceVerification } = useFaceVerification();
+  const { mutateAsync: handleFaceVerificationInquiry } =
+    useFaceVerificationInquiry();
 
   useEffect(() => {
     if (isPlay) {
@@ -32,6 +40,35 @@ const SubmitVideoVerification: React.FC<SubmitVideoVerificationProps> = (
       setStage(STAGE.VERIFICATION_VIDEO_PLACEHOLDER);
     }
   }, [videoBlob]);
+
+  const faceVerificationInquiry = () => {
+    let intervalId: number | null = null;
+    intervalId = setInterval(async () => {
+      const faceVerificationInquiryResponse =
+        await handleFaceVerificationInquiry(trackerId);
+      if (faceVerificationInquiryResponse.status === 400) {
+        handleFaceVerificationInquiry(trackerId);
+      } else {
+        clearInterval(intervalId as number);
+      }
+    }, 20000);
+  };
+
+  const handleSubmitVideo = async () => {
+    try {
+      if (videoBlob && trackerId) {
+        const uploadedFileResponse = await services.uploadFile(videoBlob);
+        await handleFaceVerification({
+          videoUrl: `https://podspace.sandpod.ir/api/files/${uploadedFileResponse.data.body.hash}`,
+          tracker: trackerId,
+        });
+
+        faceVerificationInquiry();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div className="lg:col-span-4 xs:col-span-12 flex flex-col gap-3">
@@ -88,7 +125,7 @@ const SubmitVideoVerification: React.FC<SubmitVideoVerificationProps> = (
         >
           مرحله قبل
         </Button>
-        <Button className="min-h-12 w-full mt-3">
+        <Button className="min-h-12 w-full mt-3" onClick={handleSubmitVideo}>
           اعتبار سنجی و امضای سند
         </Button>
       </Card>

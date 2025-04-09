@@ -1,21 +1,29 @@
 import { GreenVerifyIcon } from "@/assets/icons";
 import { Card } from "@/components";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
-import { useGetUserInfo } from "../contract.hooks";
+import { ContractContextType } from "@/types";
+import { useGetUserMe } from "../contract.hooks";
+import { USER_LEVEL_STATUS } from "../contract.type";
 
 export const ContractSignStatus = () => {
-  const { data: userInfoData } = useGetUserInfo();
-  const [contract] = useSessionStorage("CONTRACT");
+  const { data: userInfoData } = useGetUserMe();
+
+  const lastInquiryStatus =
+    userInfoData?.legalInquireStatus[
+      userInfoData.legalInquireStatus.length - 1
+    ];
+
+  const [contract] = useSessionStorage<ContractContextType>("CONTRACT");
 
   const checkStatus = (status: string) => {
     switch (status) {
-      case "SHAHKAR_OK":
+      case USER_LEVEL_STATUS.SHAHKAR_OK:
         return false;
-      case "SABTE_AHVAL_OK":
+      case USER_LEVEL_STATUS.SABTE_AHVAL_OK:
         return true;
-      case "IMAGE_COMPARE_OK":
+      case USER_LEVEL_STATUS.IMAGE_COMPARE_OK:
         return true;
-      case "IMAGE_SABTEAHVAL_OK":
+      case USER_LEVEL_STATUS.IMAGE_SABTEAHVAL_OK:
         return true;
       default:
         return true;
@@ -39,7 +47,7 @@ export const ContractSignStatus = () => {
     <Card className="p-[2.5rem] max-h-max  flex-wrap">
       <div className=" font-yekan-bold">پیش‌نیازهای امضای سند</div>
 
-      <div className="flex justify-between gap-3 items-center pt-10 border-b border-dashed pb-3  flex-wrap">
+      <div className="flex justify-between gap-3 items-center pt-10 pb-3  flex-wrap">
         <div>
           <img src="level.png" alt="" />
         </div>
@@ -47,8 +55,8 @@ export const ContractSignStatus = () => {
           <p className="font-yekan-bold">احراز هویت سطح 3</p>
           <p className="text-slate-400 text-sm">مورد نیاز برای درگاه</p>
         </div>
-        {checkStatus(userInfoData?.status) &&
-        checkInquiryType(userInfoData?.inquiryType) ? (
+        {checkStatus(lastInquiryStatus?.status as string) &&
+        checkInquiryType(lastInquiryStatus?.inquiryType as string) ? (
           <div className="text-green-600 flex justify-center gap-3 items-center bg-green-600/10 px-3 py-2 rounded-lg">
             <GreenVerifyIcon /> <span>احراز هویت موفق</span>
           </div>
@@ -59,7 +67,7 @@ export const ContractSignStatus = () => {
         )}
       </div>
 
-      {contract.result.faceVerificationForced && (
+      {contract?.result.faceVerificationForced && (
         <div className="flex justify-between gap-3 border-t border-dashed items-center pt-3 flex-wrap">
           <div>
             <img src="auth.png" alt="" />

@@ -16,20 +16,20 @@ export const useGetCaptcha = () => {
   return { ...getCaptchaQuery };
 };
 
-export const useGetUserInfo = () => {
-  const getUserInfoQuery = useQuery({
-    queryFn: services.getUserInfo,
-    queryKey: ["user-info"],
-  });
-  return { ...getUserInfoQuery };
-};
-
 export const useGetUserMe = () => {
   const getUserMeQuery = useQuery({
     queryFn: services.getUserMe,
     queryKey: ["user-me"],
   });
   return { ...getUserMeQuery };
+};
+
+export const useGetFVCaptcha = () => {
+  const getFVCaptchaQuery = useQuery({
+    queryFn: services.getFVCaptcha,
+    queryKey: ["fv-captcha"],
+  });
+  return { ...getFVCaptchaQuery };
 };
 
 export const useUpdateUser = () => {
@@ -45,3 +45,17 @@ export const useSignContract = () => {
   });
   return { ...signContractMutation };
 };
+
+export const useFaceVerification = () => {
+  const faceVerificationMutation = useMutation({
+    mutationFn: services.faceVerification,
+  });
+  return { ...faceVerificationMutation };
+}
+
+export const useFaceVerificationInquiry = () => {
+  const faceVerificationInquiry = useMutation({
+    mutationFn: services.faceVerificationInquiry,
+  });
+  return { ...faceVerificationInquiry };
+}

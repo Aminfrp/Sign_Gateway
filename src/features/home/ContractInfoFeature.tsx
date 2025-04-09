@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { APP_CONFIG } from "@/constants";
 import { useHookForm } from "@/hooks";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
-import { toEnglishDigits } from "@/lib/utils";
+import { getSignParam, toEnglishDigits } from "@/lib/utils";
 import { queryClient } from "@/main";
 import { ContractContextType } from "@/types";
 import { FC, useEffect, useState } from "react";
@@ -23,13 +23,12 @@ import { ContractSignStatus } from "./components/ContractSignStatus";
 import CountDownTimer from "./components/CountDownTimer";
 import {
   useGetCaptcha,
-  useGetUserInfo,
   useGetUserMe,
   useSignContract,
   useUpdateUser,
 } from "./contract.hooks";
 import { schema } from "./contract.schema";
-import { ContractInfoProps } from "./contract.type";
+import { ContractInfoProps, STAGE, USER_LEVEL_STATUS } from "./contract.type";
 
 const ContractInfoFeature: FC<ContractInfoProps> = (props) => {
   const { SCOPE } = APP_CONFIG;
@@ -41,8 +40,7 @@ const ContractInfoFeature: FC<ContractInfoProps> = (props) => {
 
   const deviceId = uuid();
   const { data: captchaData, isLoading: captchaLoading } = useGetCaptcha();
-  const { data: userInfoData } = useGetUserInfo();
-  const { data: userMe } = useGetUserMe();
+  const { data: userMe, refetch: refetchUserMe } = useGetUserMe();
 
   const { mutateAsync: handleHandshake, status: handshakeStatus } =
     useHandshake();
@@ -55,6 +53,9 @@ const ContractInfoFeature: FC<ContractInfoProps> = (props) => {
   const { mutateAsync: handleSignContract, status: signContractStatus } =
     useSignContract();
 
+  const lastIqueryStatus =
+    userMe?.legalInquireStatus[userMe?.legalInquireStatus.length - 1];
+
   const {
     handleSubmit,
     control,
@@ -62,18 +63,17 @@ const ContractInfoFeature: FC<ContractInfoProps> = (props) => {
     formState: { errors, isValid },
   } = useHookForm<typeof schema>(schema, {
     birthDate: "",
-    nationalCode: "",
     captcha: "",
     code: "",
     serial: "",
-    userStatus: userInfoData?.status || "SHAHKAR_OK",
+    userStatus: lastIqueryStatus?.status || USER_LEVEL_STATUS.SHAHKAR_OK,
   });
 
   useEffect(() => {
-    if (userInfoData?.status) {
-      setValue("userStatus", userInfoData?.status);
+    if (lastIqueryStatus?.status) {
+      setValue("userStatus", lastIqueryStatus?.status);
     }
-  }, [userInfoData]);
+  }, [userMe]);
   useEffect(() => {
     authorizeData && timeIsUp && setTimeIsUp(false);
   }, [authorizeData]);
@@ -96,10 +96,10 @@ const ContractInfoFeature: FC<ContractInfoProps> = (props) => {
         keyId: res?.body.keyId as string,
         mobile:
           (localStorage.getItem("phoneNumber") as string) ||
-          userMe.phone_number,
+          (userMe?.phone_number as string),
         nationalcode:
           (localStorage.getItem("nationalCode") as string) ||
-          userMe.nationalcode,
+          (userMe?.nationalcode as string),
       }).then((res) => {
         setAuthorizeData(res?.body);
       });
@@ -112,9 +112,8 @@ const ContractInfoFeature: FC<ContractInfoProps> = (props) => {
   };
   const updateUserLevel = async (payload: yup.InferType<typeof schema>) => {
     try {
-      if (payload.userStatus === "SHAHKAR_OK") {
+      if (payload.userStatus === USER_LEVEL_STATUS.SHAHKAR_OK) {
         return await handleUpdateUser({
-          nationalcode: payload.nationalCode,
           birthdate: toEnglishDigits(
             new Date(payload.birthDate as string).toLocaleDateString("fa-IR")
           ),
@@ -129,37 +128,75 @@ const ContractInfoFeature: FC<ContractInfoProps> = (props) => {
       console.log(error);
     }
   };
-  const signContract = async (code: string) => {
+
+  const verifyUser = async (code: string) => {
     try {
-      const verifyResponse = await handleVerify({
+      const response = await handleVerify({
         keyId: localStorage.getItem("keyId") as string,
         otp: code,
         mobile: localStorage.getItem("phoneNumber") as string,
       });
-      const signedData = await handleSignContract({
-        data: encodeURIComponent(contract?.signature as string),
-        accessToken: verifyResponse.body.access_token,
-      });
-
-      // if (signedData && signedData.signature) signSuccessfulCallback();
-      // else signErrorCallback();
-
-      // return Promise.resolve(signedData);
+      return response.body;
     } catch (error) {
-      // signErrorCallback(errorMessage);
+      console.error(error);
+    }
+  };
 
+  const signContract = async (code: string) => {
+    try {
+      const tokenContent = await verifyUser(code);
+      if (tokenContent) {
+        const signedData = await handleSignContract({
+          data: encodeURIComponent(
+            encodeURIComponent(getSignParam() as string)
+          ),
+          accessToken: tokenContent.access_token,
+        });
+      }
+    } catch (error) {
       return Promise.reject(error);
     }
   };
+
+  const checkUserLevel = (code: string) => {
+    let intervalId: number | null = null;
+
+    intervalId = setInterval(async () => {
+      await refetchUserMe().then(async (res) => {
+        const lastStatus =
+          res.data?.legalInquireStatus[res.data?.legalInquireStatus.length - 1]
+            ?.status;
+        console.log(res.data);
+        if (lastStatus === USER_LEVEL_STATUS.IMAGE_SABTEAHVAL_OK) {
+          console.log("IMAGE_SABTEAHVAL_OK");
+          await signContract(code as string);
+          clearInterval(intervalId as number);
+        }
+      });
+    }, 3000);
+  };
+
   const onSubmit = async (value: yup.InferType<typeof schema>) => {
-    if (
-      userInfoData.status === "SHAHKAR_OK" ||
-      userInfoData.status === "SABTE_AHVAL_OK"
-    ) {
-      const responseUpdateUser = await updateUserLevel(value);
-      await signContract(value.code as string);
+    if (contract?.result.faceVerificationForced) {
+      props.setStage(STAGE.VERIFICATION_VIDEO);
     } else {
-      await signContract(value.code as string);
+      if (
+        lastIqueryStatus?.status === USER_LEVEL_STATUS.SHAHKAR_OK ||
+        lastIqueryStatus?.status === USER_LEVEL_STATUS.SABTE_AHVAL_OK
+      ) {
+        try {
+          await updateUserLevel(value);
+          checkUserLevel(value.code);
+        } catch (error) {
+          console.log(error);
+        }
+      } else {
+        try {
+          await signContract(value.code as string);
+        } catch (error) {
+          console.log(error);
+        }
+      }
     }
   };
 
@@ -181,53 +218,32 @@ const ContractInfoFeature: FC<ContractInfoProps> = (props) => {
           className="flex flex-col gap-5 pt-5"
           onSubmit={handleSubmit(onSubmit)}
         >
-          {userInfoData?.status === "SHAHKAR_OK" ||
-          userInfoData?.status === null ? (
-            <>
-              <Controller
-                name="nationalCode"
-                control={control}
-                render={({ field }) => (
-                  <TextInput
-                    containerClassName="mt-5"
-                    label="کد ملی"
-                    placeholder="کد ملی 10 رقمی خود را بنویسید..."
-                    disabled={
-                      verifyStatus === "pending" ||
-                      signContractStatus === "pending" ||
-                      updateUserStatus === "pending"
-                    }
-                    {...field}
-                    error={errors?.nationalCode?.message}
-                  />
-                )}
-              />
-
-              <Controller
-                name="birthDate"
-                control={control}
-                render={({ field }) => (
-                  <Datepicker
-                    label="تاریخ تولد"
-                    placeholder="تاریخ تولد خود را بنویسید..."
-                    error={errors?.birthDate?.message}
-                    onChange={(value) => {
-                      field.onChange(value.value);
-                    }}
-                    value={field.value as any}
-                    disabled={
-                      verifyStatus === "pending" ||
-                      signContractStatus === "pending" ||
-                      updateUserStatus === "pending"
-                    }
-                  />
-                )}
-              />
-            </>
+          {lastIqueryStatus?.status === USER_LEVEL_STATUS.SHAHKAR_OK ||
+          lastIqueryStatus?.status === null ? (
+            <Controller
+              name="birthDate"
+              control={control}
+              render={({ field }) => (
+                <Datepicker
+                  label="تاریخ تولد"
+                  placeholder="تاریخ تولد خود را بنویسید..."
+                  error={errors?.birthDate?.message}
+                  onChange={(value) => {
+                    field.onChange(value.value);
+                  }}
+                  value={field.value as any}
+                  disabled={
+                    verifyStatus === "pending" ||
+                    signContractStatus === "pending" ||
+                    updateUserStatus === "pending"
+                  }
+                />
+              )}
+            />
           ) : null}
-          {userInfoData?.status === "SABTE_AHVAL_OK" ||
-          userInfoData?.status === "SHAHKAR_OK" ||
-          userInfoData?.status === null ? (
+          {lastIqueryStatus?.status === USER_LEVEL_STATUS.SABTE_AHVAL_OK ||
+          lastIqueryStatus?.status === USER_LEVEL_STATUS.SHAHKAR_OK ||
+          lastIqueryStatus?.status === null ? (
             <div className="relative">
               <Dialog
                 open={isDialogOpen}
@@ -310,7 +326,7 @@ const ContractInfoFeature: FC<ContractInfoProps> = (props) => {
                   <Loading />
                 ) : (
                   <img
-                    src={captchaData?.data.result.url}
+                    src={captchaData?.data.body.url}
                     className="w-full h-full px-2"
                   />
                 )}

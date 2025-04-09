@@ -13,6 +13,7 @@ const SubmitVideoVerification = lazy(() => import("./SubmitVideoVerification"));
 export const HomeFeature = () => {
   const [stage, setStage] = useState<STAGE>(STAGE.OTP);
   const [videoBlob, setVideoBlob] = useState<Blob | null>(null);
+  const [trackerId, setTrackerId] = useState<string>("");
 
 
 
@@ -25,6 +26,7 @@ export const HomeFeature = () => {
           <VideoVerificationPlaceholderFeature
             setVideoBlob={setVideoBlob}
             setStage={setStage}
+            setTrackerId={setTrackerId}
           />
         );
       case STAGE.VERIFICATION_VIDEO:
@@ -33,6 +35,7 @@ export const HomeFeature = () => {
             videoBlob={videoBlob}
             setStage={setStage}
             setVideoBlob={setVideoBlob}
+            trackerId={trackerId}
           />
         );
     }

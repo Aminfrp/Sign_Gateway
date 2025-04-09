@@ -3,21 +3,17 @@ import { getCodeParam } from "@/lib/utils";
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import { toast } from "react-toastify";
 
-const { BASE_URL, RAD_BASE_URL } = APP_CONFIG;
+const { BASE_URL } = APP_CONFIG;
+
+const apiOptions = {
+  headers: {
+    "business-code": APP_CONFIG.BUSINESS_CODE,
+  },
+};
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
-});
-
-const radApiOptions = {
-  headers: {
-    "Client-Id": APP_CONFIG.CLIENT_ID,
-    accept: "application/json",
-  },
-};
-const radAxiosInstance = axios.create({
-  baseURL: RAD_BASE_URL,
-  ...radApiOptions,
+  ...apiOptions,
 });
 
 export class RequestApi {
@@ -64,5 +60,3 @@ api.instance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-export const radApi = new RequestApi(radAxiosInstance);

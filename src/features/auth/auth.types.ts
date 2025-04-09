@@ -1,4 +1,4 @@
-import { AuthResponse } from "@/types";
+import { ParaphResponse } from "@/types";
 
 // handshake
 export type HandshakeRequestType = {
@@ -42,7 +42,7 @@ type HandshakeResponse = {
   publicKey: string;
 };
 
-export type HandshakeResponseType = AuthResponse<HandshakeResponse>;
+export type HandshakeResponseType = ParaphResponse<HandshakeResponse>;
 
 // authorize
 export type AuthorizeRequestType = {
@@ -61,7 +61,7 @@ export type AuthorizeResponse = {
   sent_before: boolean;
   codeLength: number;
 };
-export type AuthorizeResponseType = AuthResponse<AuthorizeResponse>;
+export type AuthorizeResponseType = ParaphResponse<AuthorizeResponse>;
 
 // verify
 export type VerifyRequestType = {
@@ -76,4 +76,4 @@ type VerifyResponse = {
   refresh_token: string;
   token_type: string;
 };
-export type VerifyResponseType = AuthResponse<VerifyResponse>;
+export type VerifyResponseType = ParaphResponse<VerifyResponse>;

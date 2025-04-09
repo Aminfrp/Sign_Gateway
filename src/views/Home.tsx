@@ -1,27 +1,29 @@
 import FullPageLoading from "@/components/base/fullPageLoading/FullPageLoading";
-import { ROUTES } from "@/constants";
-import { useGetUserInfo } from "@/features/home/contract.hooks";
+import { useGetUserMe } from "@/features/home/contract.hooks";
 import withAuth from "@/HOC/AuthHOC";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
+import { ContractContextType } from "@/types";
 import { useEffect } from "react";
 import { HomeFeature } from "../features";
 
 export const Home = () => {
-  const [contract] = useSessionStorage("CONTRACT");
-  const { data: userInfoData, refetch: refetchUserInfo } = useGetUserInfo();
+  const [contract] = useSessionStorage<ContractContextType>("CONTRACT");
+  const { data: userInfoData, refetch: refetchUserInfo } = useGetUserMe();
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      if (userInfoData && userInfoData.status === null) {
+      if (userInfoData && userInfoData?.legalInquireStatus.length === 0) {
         refetchUserInfo();
       }
-    }, 10000);
+    }, 3000);
     return () => clearInterval(intervalId);
   }, [userInfoData, refetchUserInfo]);
-  if (userInfoData && userInfoData?.status === null) return <FullPageLoading />;
+
+  if (userInfoData && userInfoData?.legalInquireStatus.length === 0)
+    return <FullPageLoading />;
 
   if (!contract) {
-    window.location.href = `${ROUTES.NOT_FOUND}`;
+    // window.location.href = `${ROUTES.NOT_FOUND}`;
   }
   return (
     <div className="container mx-auto flex-1 flex flex-col">

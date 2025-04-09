@@ -1,4 +1,3 @@
-import { ROUTES } from "@/constants";
 import { services } from "@/features/home/contract.api";
 import { checkAutoLogin, getSignParam } from "@/lib/utils";
 import { ContractContextType } from "@/types";
@@ -25,8 +24,6 @@ export const useGetContractContent = () => {
     } catch (error: any) {
       const data = error && error.data;
       // window.location.href = `${ROUTES.NOT_FOUND}`;
-      // TODO: fix debugger
-      // debugLogger("error in isDownloadLinkValid: ", error);
     }
   };
 
@@ -36,7 +33,7 @@ export const useGetContractContent = () => {
       getSignParam() && (await manageSignContent());
       if (!localStorage.getItem("token")) await checkAutoLogin();
     } catch (e) {
-      window.location.href = `${ROUTES.NOT_FOUND}`;
+      // window.location.href = `${ROUTES.NOT_FOUND}`;
     }
     setAppLoading(false);
   };

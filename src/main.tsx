@@ -1,5 +1,4 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { ToastContainer } from "react-toastify";
 import "./index.css";
@@ -16,15 +15,19 @@ export const queryClient = new QueryClient({
 });
 
 createRoot(document.getElementById("root") as HTMLElement).render(
-  <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <Router />
-      <ToastContainer
-        stacked={true}
-        autoClose={2000}
-        position="bottom-right"
-        rtl={true}
-      />
-    </QueryClientProvider>
-  </StrictMode>
+  <QueryClientProvider client={queryClient}>
+    <Router />
+    <ToastContainer
+      stacked={true}
+      autoClose={2000}
+      position="bottom-right"
+      rtl={true}
+      toastStyle={{
+        fontFamily: "Yekan_Regular !important",
+      }}
+      style={{
+        fontFamily: "Yekan_Regular !important",
+      }}
+    />
+  </QueryClientProvider>
 );

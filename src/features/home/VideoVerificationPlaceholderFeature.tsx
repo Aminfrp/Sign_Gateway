@@ -10,7 +10,7 @@ import { STAGE, VideoVerificationFeatureProps } from "./contract.type";
 const VideoVerificationPlaceholderFeature: FC<VideoVerificationFeatureProps> = (
   props
 ) => {
-  const { setVideoBlob, setStage } = props;
+  const { setVideoBlob, setStage, setTrackerId } = props;
   const [showVideoVerificationDialog, setShowVideoVerificationDialog] =
     useState(false);
   return (
@@ -65,6 +65,7 @@ const VideoVerificationPlaceholderFeature: FC<VideoVerificationFeatureProps> = (
           <VideoVerificationFeature
             setVideoBlob={setVideoBlob}
             setStage={setStage}
+            setTrackerId={setTrackerId}
           />
         </DialogContent>
       </Dialog>

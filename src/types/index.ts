@@ -1,4 +1,4 @@
-export type AuthResponse<T> = {
+export type ParaphResponse<T> = {
   refId: string;
   statusCode: string;
   message: string;
