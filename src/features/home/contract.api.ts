@@ -4,8 +4,11 @@ import { api } from "@/services";
 import {
   CaptchaResponse,
   ContractResponseFromLink,
-  faceVerificationPayload,
+  FaceVerificationPayload,
+  FaceVerificationResponse,
   FVCaptchaResponse,
+  ShareUploadFileRequest,
+  ShareUploadFileResponse,
   UpdateUserPayload,
   UploadFileResponse,
   UserInfoResponse,
@@ -36,23 +39,37 @@ export const services = {
         "business-code": APP_CONFIG.BUSINESS_CODE,
         "access-token": payload.accessToken,
       },
+      params: {
+        sign: payload.data,
+      },
     };
-    return await api.post(
-      `/api/gateway/sign?sign=${payload.data}`,
-      undefined,
-      options
-    );
+    return await api.post(`/api/gateway/sign`, undefined, options);
   },
-  faceVerification: async (payload: faceVerificationPayload) =>
-    await api.post("/api/face-verification/", payload),
+  faceVerification: async (payload: FaceVerificationPayload) =>
+    await api.post<FaceVerificationPayload, undefined>(
+      "/api/face-verification/",
+      payload
+    ),
   faceVerificationInquiry: async (tracker: string) =>
-    await api.get(`/api/face-verification/inquiry/${tracker}`),
+    await api.get<FaceVerificationResponse>(`/api/face-verification/inquiry/${tracker}`),
   uploadFile: async (data: Blob) => {
     const formData = new FormData();
     formData.append("file", data);
+
     return await api.post<FormData, UploadFileResponse>(
       "/api/file/upload",
       formData
+    );
+  },
+  uploadShareFile: async (data: string) => {
+    const payload = {
+      fileHash: data,
+      persons: APP_CONFIG.AI_USER,
+      identityType: "username",
+    };
+    return await api.post<ShareUploadFileRequest, ShareUploadFileResponse>(
+      "/api/file/share",
+      payload
     );
   },
 };

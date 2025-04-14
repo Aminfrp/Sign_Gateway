@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { APP_CONFIG } from "../constants";
@@ -149,4 +149,8 @@ export const secondsToHMS = (seconds: number) => {
   const hour = ~~(seconds / 3600);
 
   return { second, minute, hour };
+};
+
+export const sleep = (ms: number) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 };

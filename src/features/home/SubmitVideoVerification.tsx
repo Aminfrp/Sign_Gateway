@@ -3,23 +3,30 @@ import { Button, Card } from "@/components";
 import { useEffect, useRef, useState } from "react";
 import { CiPlay1, CiStop1 } from "react-icons/ci";
 import { IoTrashOutline } from "react-icons/io5";
+import { toast } from "react-toastify";
 import { ContractSignStatus } from "./components/ContractSignStatus";
-import { services } from "./contract.api";
 import {
   useFaceVerification,
   useFaceVerificationInquiry,
+  useShareUploadFile,
+  useUploadFile,
 } from "./contract.hooks";
 import { STAGE, SubmitVideoVerificationProps } from "./contract.type";
+import { useSignContractAction } from "./contract.utils";
 
 const SubmitVideoVerification: React.FC<SubmitVideoVerificationProps> = (
   props
 ) => {
-  const { videoBlob, setStage, setVideoBlob, trackerId } = props;
+  const { videoBlob, setStage, setVideoBlob, trackerId, code } = props;
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [isPlay, setIsPlay] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { mutateAsync: handleFaceVerification } = useFaceVerification();
   const { mutateAsync: handleFaceVerificationInquiry } =
     useFaceVerificationInquiry();
+  const { mutateAsync: handleUploadFile } = useUploadFile();
+  const { mutateAsync: handleShareUploadFile } = useShareUploadFile();
+  const { sign } = useSignContractAction();
 
   useEffect(() => {
     if (isPlay) {
@@ -49,7 +56,15 @@ const SubmitVideoVerification: React.FC<SubmitVideoVerificationProps> = (
       if (faceVerificationInquiryResponse.status === 400) {
         handleFaceVerificationInquiry(trackerId);
       } else {
-        clearInterval(intervalId as number);
+        if (faceVerificationInquiryResponse.data.body.isLive) {
+          await sign(code);
+          setIsLoading(false);
+          clearInterval(intervalId as number);
+        } else {
+          toast.error("فیلم چهره زنده نمی باشد");
+          setIsLoading(false);
+          clearInterval(intervalId as number);
+        }
       }
     }, 20000);
   };
@@ -57,16 +72,22 @@ const SubmitVideoVerification: React.FC<SubmitVideoVerificationProps> = (
   const handleSubmitVideo = async () => {
     try {
       if (videoBlob && trackerId) {
-        const uploadedFileResponse = await services.uploadFile(videoBlob);
+        setIsLoading(true);
+        const uploadedFileResponse = await handleUploadFile(videoBlob);
+        const hash =
+          uploadedFileResponse && uploadedFileResponse.data.body.hash;
+        const shareUploadedFileResponse = await handleShareUploadFile(hash);
+        const shareHash =
+          shareUploadedFileResponse && shareUploadedFileResponse.data.body.hash;
         await handleFaceVerification({
-          videoUrl: `https://podspace.sandpod.ir/api/files/${uploadedFileResponse.data.body.hash}`,
+          videoUrl: `https://podspace.sandpod.ir/api/files/${shareHash}`,
           tracker: trackerId,
         });
-
-        faceVerificationInquiry();
+        await faceVerificationInquiry();
       }
     } catch (error) {
       console.error(error);
+      setIsLoading(false);
     }
   };
 
@@ -125,7 +146,12 @@ const SubmitVideoVerification: React.FC<SubmitVideoVerificationProps> = (
         >
           مرحله قبل
         </Button>
-        <Button className="min-h-12 w-full mt-3" onClick={handleSubmitVideo}>
+        <Button
+          className="min-h-12 w-full mt-3"
+          onClick={handleSubmitVideo}
+          disabled={isLoading}
+          isLoading={isLoading}
+        >
           اعتبار سنجی و امضای سند
         </Button>
       </Card>

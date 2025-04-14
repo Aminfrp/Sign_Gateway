@@ -14,13 +14,12 @@ export const HomeFeature = () => {
   const [stage, setStage] = useState<STAGE>(STAGE.OTP);
   const [videoBlob, setVideoBlob] = useState<Blob | null>(null);
   const [trackerId, setTrackerId] = useState<string>("");
-
-
-
+  const [code,setCode] = useState<string>("");
+  
   const renderStages = (stage: STAGE) => {
     switch (stage) {
       case STAGE.OTP:
-        return <ContractInfoFeature setStage={setStage} />;
+        return <ContractInfoFeature setStage={setStage} setCode={setCode} />;
       case STAGE.VERIFICATION_VIDEO_PLACEHOLDER:
         return (
           <VideoVerificationPlaceholderFeature
@@ -36,6 +35,7 @@ export const HomeFeature = () => {
             setStage={setStage}
             setVideoBlob={setVideoBlob}
             trackerId={trackerId}
+            code={code}
           />
         );
     }

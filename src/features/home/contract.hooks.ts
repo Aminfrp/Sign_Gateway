@@ -27,6 +27,8 @@ export const useGetUserMe = () => {
 export const useGetFVCaptcha = () => {
   const getFVCaptchaQuery = useQuery({
     queryFn: services.getFVCaptcha,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
     queryKey: ["fv-captcha"],
   });
   return { ...getFVCaptchaQuery };
@@ -51,11 +53,25 @@ export const useFaceVerification = () => {
     mutationFn: services.faceVerification,
   });
   return { ...faceVerificationMutation };
-}
+};
 
 export const useFaceVerificationInquiry = () => {
   const faceVerificationInquiry = useMutation({
     mutationFn: services.faceVerificationInquiry,
   });
   return { ...faceVerificationInquiry };
-}
+};
+
+export const useUploadFile = () => {
+  const uploadFileMutation = useMutation({
+    mutationFn: services.uploadFile,
+  });
+  return { ...uploadFileMutation };
+};
+
+export const useShareUploadFile = () => {
+  const shareUploadFileMutation = useMutation({
+    mutationFn: services.uploadShareFile,
+  });
+  return { ...shareUploadFileMutation };
+};

@@ -5,4 +5,5 @@ export const APP_CONFIG = {
   SCOPE: import.meta.env.VITE_APP_SCOPE as string,
   BUSINESS_CODE: import.meta.env.VITE_APP_BUSINESS_CODE as number,
   APP_DOMAIN_URL: import.meta.env.VITE_APP_DOMAIN_URL as string,
+  AI_USER: import.meta.env.VITE_APP_AI_USER as string,
 };

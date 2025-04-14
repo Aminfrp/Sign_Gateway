@@ -19,6 +19,7 @@ export enum USER_LEVEL_STATUS {
 export type SubmitVideoVerificationProps = {
   videoBlob: Blob | null;
   trackerId: string;
+  code: string;
   setStage: React.Dispatch<React.SetStateAction<STAGE>>;
   setVideoBlob: React.Dispatch<React.SetStateAction<Blob | null>>;
 };
@@ -35,6 +36,7 @@ export type NationalCardSerialProps = {
 
 export type ContractInfoProps = {
   setStage: React.Dispatch<React.SetStateAction<STAGE>>;
+  setCode: React.Dispatch<React.SetStateAction<string>>;
 };
 
 // services types
@@ -168,7 +170,38 @@ export type UpdateUserPayload = {
   birthdate?: string;
 };
 
-export type faceVerificationPayload = {
+export type FaceVerificationPayload = {
   videoUrl: string;
   tracker: string;
+};
+
+type FaceVerification = {
+  retryCount: number;
+  verifyStatus: number;
+  expectedMotionCaptcha: string | null;
+  inferenceMotionCaptcha: string | null;
+  expirationTime: number;
+  isLive: boolean;
+  isSuspicious: boolean;
+  live: boolean;
+  liveConfidence: number;
+  suspicious: boolean;
+  uploadedTime: number;
+};
+
+export type FaceVerificationResponse = ParaphResponse<FaceVerification>;
+
+type ShareUploadFile = {
+  hash: string;
+  entity: {
+    hash: string;
+  };
+};
+
+export type ShareUploadFileResponse = ParaphResponse<ShareUploadFile>;
+
+export type ShareUploadFileRequest = {
+  fileHash: string;
+  persons: string;
+  identityType: string;
 };

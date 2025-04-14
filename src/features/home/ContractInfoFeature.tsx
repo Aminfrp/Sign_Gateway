@@ -3,8 +3,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { APP_CONFIG } from "@/constants";
 import { useHookForm } from "@/hooks";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
-import { getSignParam, toEnglishDigits } from "@/lib/utils";
-import { queryClient } from "@/main";
+import { sleep, toEnglishDigits } from "@/lib/utils";
 import { ContractContextType } from "@/types";
 import { FC, useEffect, useState } from "react";
 import { Controller } from "react-hook-form";
@@ -29,6 +28,7 @@ import {
 } from "./contract.hooks";
 import { schema } from "./contract.schema";
 import { ContractInfoProps, STAGE, USER_LEVEL_STATUS } from "./contract.type";
+import { useSignContractAction } from "./contract.utils";
 
 const ContractInfoFeature: FC<ContractInfoProps> = (props) => {
   const { SCOPE } = APP_CONFIG;
@@ -39,19 +39,20 @@ const ContractInfoFeature: FC<ContractInfoProps> = (props) => {
   const [authorizeData, setAuthorizeData] = useState<AuthorizeResponse>();
 
   const deviceId = uuid();
-  const { data: captchaData, isLoading: captchaLoading } = useGetCaptcha();
+  const {
+    data: captchaData,
+    isPending : captchaLoading,
+    refetch: handleRefetchCaptcha,
+  } = useGetCaptcha();
   const { data: userMe, refetch: refetchUserMe } = useGetUserMe();
-
-  const { mutateAsync: handleHandshake, status: handshakeStatus } =
-    useHandshake();
-  const { mutateAsync: handleAuthorize, status: authorizeStatus } =
-    useAuthorize();
-  const { mutateAsync: handleVerify, status: verifyStatus } = useVerify();
-  const { mutateAsync: handleGetIP, status: getIpStatus } = useGetIP();
+  const { mutateAsync: handleHandshake } = useHandshake();
+  const { mutateAsync: handleAuthorize } = useAuthorize();
+  const { status: verifyStatus } = useVerify();
+  const { mutateAsync: handleGetIP } = useGetIP();
   const { mutateAsync: handleUpdateUser, status: updateUserStatus } =
     useUpdateUser();
-  const { mutateAsync: handleSignContract, status: signContractStatus } =
-    useSignContract();
+  const { status: signContractStatus } = useSignContract();
+  const { sign } = useSignContractAction();
 
   const lastIqueryStatus =
     userMe?.legalInquireStatus[userMe?.legalInquireStatus.length - 1];
@@ -67,6 +68,7 @@ const ContractInfoFeature: FC<ContractInfoProps> = (props) => {
     code: "",
     serial: "",
     userStatus: lastIqueryStatus?.status || USER_LEVEL_STATUS.SHAHKAR_OK,
+    fv: false,
   });
 
   useEffect(() => {
@@ -77,6 +79,12 @@ const ContractInfoFeature: FC<ContractInfoProps> = (props) => {
   useEffect(() => {
     authorizeData && timeIsUp && setTimeIsUp(false);
   }, [authorizeData]);
+
+  useEffect(() => {
+    if (contract?.result.faceVerificationForced) {
+      setValue("fv", contract?.result.faceVerificationForced);
+    }
+  }, [contract]);
 
   const handleDialogClose = () => {
     setIsDialogOpen(false);
@@ -105,11 +113,7 @@ const ContractInfoFeature: FC<ContractInfoProps> = (props) => {
       });
     });
   };
-  const refetchCaptcha = () => {
-    queryClient.refetchQueries({
-      queryKey: ["captcha"],
-    });
-  };
+  const refetchCaptcha = () => handleRefetchCaptcha();
   const updateUserLevel = async (payload: yup.InferType<typeof schema>) => {
     try {
       if (payload.userStatus === USER_LEVEL_STATUS.SHAHKAR_OK) {
@@ -128,75 +132,49 @@ const ContractInfoFeature: FC<ContractInfoProps> = (props) => {
       console.log(error);
     }
   };
+  const checkUserLevelAndSign = async (code: string) => {
+    for (let i = 0; i < 30; i++) {
+      const res = await refetchUserMe();
+      const lastStatus =
+        res.data?.legalInquireStatus[res.data?.legalInquireStatus.length - 1]
+          ?.status;
 
-  const verifyUser = async (code: string) => {
-    try {
-      const response = await handleVerify({
-        keyId: localStorage.getItem("keyId") as string,
-        otp: code,
-        mobile: localStorage.getItem("phoneNumber") as string,
-      });
-      return response.body;
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const signContract = async (code: string) => {
-    try {
-      const tokenContent = await verifyUser(code);
-      if (tokenContent) {
-        const signedData = await handleSignContract({
-          data: encodeURIComponent(
-            encodeURIComponent(getSignParam() as string)
-          ),
-          accessToken: tokenContent.access_token,
-        });
+      if (lastStatus === USER_LEVEL_STATUS.IMAGE_SABTEAHVAL_OK) {
+        await sign(code);
+        break;
       }
-    } catch (error) {
-      return Promise.reject(error);
+      await sleep(10000);
     }
   };
-
-  const checkUserLevel = (code: string) => {
-    let intervalId: number | null = null;
-
-    intervalId = setInterval(async () => {
-      await refetchUserMe().then(async (res) => {
-        const lastStatus =
-          res.data?.legalInquireStatus[res.data?.legalInquireStatus.length - 1]
-            ?.status;
-        console.log(res.data);
-        if (lastStatus === USER_LEVEL_STATUS.IMAGE_SABTEAHVAL_OK) {
-          console.log("IMAGE_SABTEAHVAL_OK");
-          await signContract(code as string);
-          clearInterval(intervalId as number);
-        }
-      });
-    }, 3000);
-  };
-
   const onSubmit = async (value: yup.InferType<typeof schema>) => {
-    if (contract?.result.faceVerificationForced) {
-      props.setStage(STAGE.VERIFICATION_VIDEO);
-    } else {
+    try {
       if (
         lastIqueryStatus?.status === USER_LEVEL_STATUS.SHAHKAR_OK ||
         lastIqueryStatus?.status === USER_LEVEL_STATUS.SABTE_AHVAL_OK
       ) {
-        try {
-          await updateUserLevel(value);
-          checkUserLevel(value.code);
-        } catch (error) {
-          console.log(error);
+        const updateUserResponse = await updateUserLevel(value);
+        if (updateUserResponse && updateUserResponse?.status === 200)
+          checkUserLevelAndSign(value.code);
+        if (contract?.result.faceVerificationForced) {
+          props.setCode(value.code);
+          props.setStage(STAGE.VERIFICATION_VIDEO);
+        } else {
+          await sign(value.code as string);
         }
       } else {
-        try {
-          await signContract(value.code as string);
-        } catch (error) {
-          console.log(error);
+        if (contract?.result.faceVerificationForced) {
+          props.setCode(value.code);
+          props.setStage(STAGE.VERIFICATION_VIDEO);
+        } else {
+          try {
+            await sign(value.code as string);
+          } catch (error) {
+            console.log(error);
+          }
         }
       }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -241,8 +219,11 @@ const ContractInfoFeature: FC<ContractInfoProps> = (props) => {
               )}
             />
           ) : null}
-          {lastIqueryStatus?.status === USER_LEVEL_STATUS.SABTE_AHVAL_OK ||
-          lastIqueryStatus?.status === USER_LEVEL_STATUS.SHAHKAR_OK ||
+
+          {(lastIqueryStatus?.status === USER_LEVEL_STATUS.SABTE_AHVAL_OK &&
+            contract?.result.faceVerificationForced) ||
+          (lastIqueryStatus?.status === USER_LEVEL_STATUS.SHAHKAR_OK &&
+            contract?.result.faceVerificationForced) ||
           lastIqueryStatus?.status === null ? (
             <div className="relative">
               <Dialog
@@ -339,6 +320,7 @@ const ContractInfoFeature: FC<ContractInfoProps> = (props) => {
               </div>
             </div>
           </div>
+
           <div className="flex gap-4 w-full flex-wrap">
             <Controller
               name="code"
@@ -388,9 +370,15 @@ const ContractInfoFeature: FC<ContractInfoProps> = (props) => {
               </>
             )}
           </div>
+
           <Button variant="outline">انصراف</Button>
           <Button
             disabled={
+              verifyStatus === "pending" ||
+              signContractStatus === "pending" ||
+              updateUserStatus === "pending"
+            }
+            isLoading={
               verifyStatus === "pending" ||
               signContractStatus === "pending" ||
               updateUserStatus === "pending"

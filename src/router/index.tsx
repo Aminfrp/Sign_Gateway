@@ -4,7 +4,7 @@ import { ROUTES } from "@/constants";
 import { useAutoLogin } from "@/hooks";
 import { useGetContractContent } from "@/hooks/useGetContractContent";
 import { NotFound } from "@/views/NotFound";
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import { Layout } from "../components";
 
@@ -13,7 +13,17 @@ const OTP = lazy(() => import("@/views/OTP"));
 const Home = lazy(() => import("@/views/Home"));
 
 const Router = () => {
+  // useEffect(() => {
+  //   const clearLocalStorage = () => {
+  //     localStorage.clear();
+  //   };
+  //   window.addEventListener("beforeunload", clearLocalStorage);
+  //   return () => {
+  //     window.removeEventListener("beforeunload", clearLocalStorage);
+  //   };
+  // }, []);
   const { appLoading, contract } = useGetContractContent();
+
   useAutoLogin();
 
   if (appLoading) return <FullPageLoading />;

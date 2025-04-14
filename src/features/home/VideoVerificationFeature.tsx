@@ -12,7 +12,7 @@ export const VideoVerificationFeature: React.FC<
   const { data: fvCaptcha } = useGetFVCaptcha();
   const mediaRecorderRef = useRef<any>(null);
   const [recording, setRecording] = useState(false);
-  const [seconds, setSeconds] = useState(20);
+  const [seconds, setSeconds] = useState(30);
   const [isActive, setIsActive] = useState(true);
   const [hasPermission, setHasPermission] = useState(true);
   const [error, setError] = useState("");
