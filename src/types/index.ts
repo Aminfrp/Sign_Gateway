@@ -21,6 +21,11 @@ type ContractData = {
   faceVerificationForced: boolean;
 };
 
+export type ContractsContextType = {
+  result: ContractData[];
+  signature: string;
+};
+
 export type ContractContextType = {
   result: ContractData;
   signature: string;

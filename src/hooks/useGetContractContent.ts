@@ -1,26 +1,41 @@
-import { services } from "@/features/home/contract.api";
-import { checkAutoLogin, getSignParam } from "@/lib/utils";
-import { ContractContextType } from "@/types";
+import { services } from "@/features/contract/contract.api";
+import { services as contractsSerices } from "@/features/contracts/contract.api";
+import {checkAutoLogin, getCodeParam, getSignParam} from "@/lib/utils";
+import { ContractContextType, ContractsContextType } from "@/types";
 import { useEffect, useState } from "react";
 import { useSessionStorage } from "./useSessionStorage";
+import {useAutoLogin} from "@/features/auth/auth.hooks";
+import {APP_CONFIG} from "@/constants";
 
 export const useGetContractContent = () => {
   const [contract, setContract] =
     useSessionStorage<ContractContextType>("CONTRACT");
+  const [contracts, setContracts] =
+      useSessionStorage<ContractsContextType>("CONTRACTS");
   const [appLoading, setAppLoading] = useState(false);
+  const {mutateAsync:handleAutoLogin} = useAutoLogin();
 
   const manageSignContent = async () => {
     const params = { sign: encodeURIComponent(getSignParam() as string) };
     try {
-      const signatureResult = await services.getContract(params);
-      if (signatureResult) {
-        // TODO: fix contract type
-        setContract({
-          ...signatureResult,
-          signature: getSignParam() as string,
-        });
+      if(window.location.pathname.includes("/contracts")) {
+        const signatureResult = await contractsSerices.getContract(params);
+        if (signatureResult) {
+          setContracts({
+            result: [...signatureResult.body],
+            signature: getSignParam() as string,
+          });
+        }
+      }else{
+        const signatureResult = await services.getContract(params);
+        if (signatureResult) {
+          setContract({
+            result: signatureResult.body?.result,
+            signature: getSignParam() as string,
+          });
+        }
       }
-      //   TODO: add error type
+
     } catch (error: any) {
       const data = error && error.data;
       // window.location.href = `${ROUTES.NOT_FOUND}`;
@@ -31,7 +46,18 @@ export const useGetContractContent = () => {
     setAppLoading(true);
     try {
       getSignParam() && (await manageSignContent());
-      if (!localStorage.getItem("token")) await checkAutoLogin();
+      if (!localStorage.getItem("token")) {
+        await checkAutoLogin()
+        if(getCodeParam()){
+          const autoLoginResponse  = await handleAutoLogin({
+            code: getCodeParam() as string,
+            redirect_uri:contract?APP_CONFIG.APP_URL:`${APP_CONFIG.APP_URL}/contracts`
+          })
+          localStorage.setItem("token", autoLoginResponse?.body.access_token);
+          localStorage.setItem("refreshToken", autoLoginResponse?.body.refresh_token);
+        }
+      };
+
     } catch (e) {
       // window.location.href = `${ROUTES.NOT_FOUND}`;
     }
@@ -41,5 +67,5 @@ export const useGetContractContent = () => {
     processData();
   }, []);
 
-  return { appLoading, contract };
+  return { appLoading, contract, contracts };
 };

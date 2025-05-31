@@ -3,6 +3,7 @@ import { services } from "./auth.api";
 import {
   AuthorizeRequestType,
   AuthorizeResponseType,
+  AutoLoginRequestType,
   HandshakeRequestType,
   HandshakeResponseType,
   VerifyRequestType,
@@ -42,3 +43,12 @@ export const useVerify = () => {
   >({ mutationFn: services.verifyService });
   return { ...verifyMutation };
 };
+
+export const useAutoLogin = () => {
+  const autoLoginMutation = useMutation<
+      VerifyResponseType,
+      Error,
+      AutoLoginRequestType
+  >({ mutationFn: services.autoLoginService });
+  return { ...autoLoginMutation };
+}

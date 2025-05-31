@@ -17,7 +17,7 @@ import { v4 as uuid } from "uuid";
 import * as yup from "yup";
 import { useAuthorize, useGetIP, useHandshake, useVerify } from "./auth.hooks";
 import { verifySchema } from "./auth.schema";
-import { ContractContextType } from "@/types";
+import {ContractContextType, ContractsContextType} from "@/types";
 
 export const OTPFeature = () => {
   const { BASE_URL, CLIENT_ID, SCOPE } = APP_CONFIG;
@@ -37,6 +37,7 @@ export const OTPFeature = () => {
   const { mutateAsync: handleAuthorize, status: authorizeStatus } =
     useAuthorize();
   const [contract] = useSessionStorage<ContractContextType>("CONTRACT");
+  const [contracts] = useSessionStorage<ContractsContextType>("CONTRACTS");
 
   const [expireIn, setExpireIn] = useState<number>(
     parseInt(localStorage.getItem("expire_in") || "0")
@@ -68,7 +69,7 @@ export const OTPFeature = () => {
     }).then((res) => {
       localStorage.setItem("token", res?.body.access_token);
       localStorage.setItem("refreshToken", res?.body.refresh_token);
-      navigate(`/?sign=${contract?.signature as string}`);
+      contract?navigate(`/?sign=${contract?.signature as string}`):navigate(`/contracts?sign=${contracts?.signature as string}`);
     });
   };
 

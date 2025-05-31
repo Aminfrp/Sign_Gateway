@@ -2,7 +2,7 @@ import { api } from "@/services";
 import axios from "axios";
 import {
   AuthorizeRequestType,
-  AuthorizeResponseType,
+  AuthorizeResponseType, AutoLoginRequestType,
   HandshakeRequestType,
   HandshakeResponseType,
   VerifyRequestType,
@@ -45,6 +45,17 @@ export const services = {
     type VerifyRequest = Omit<VerifyRequestType, "mobile">;
     const response = await api.post<VerifyRequest, VerifyResponseType>(
       `/api/auth/verify/${data.mobile}`,
+      payload
+    );
+    return response.data;
+  },
+  autoLoginService: async (data: AutoLoginRequestType) => {
+    const payload = {
+      code: data.code,
+      redirect_uri: data.redirect_uri,
+    };
+    const response = await api.post<AutoLoginRequestType, VerifyResponseType>(
+      `/api/auth/auto_login`,
       payload
     );
     return response.data;

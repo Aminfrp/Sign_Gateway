@@ -1,4 +1,4 @@
-import { getCodeParam } from "@/lib/utils";
+import {getAutoLoginCodeParam} from "@/lib/utils";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router";
 
@@ -10,7 +10,7 @@ function withAuth<T extends object>(WrappedComponent: React.ComponentType<T>) {
   return (props: T) => {
     const navigate = useNavigate();
     useEffect(() => {
-      if (!checkAuth() && !getCodeParam()) {
+      if (!checkAuth() && !getAutoLoginCodeParam()) {
         navigate("/auth/login", { replace: true });
       }
     }, []);

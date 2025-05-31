@@ -25,6 +25,11 @@ body {
   position: relative;
 }
 
+.Toastify__toast {
+  font-family: "Yekan_Regular";
+  font-size: 0.85rem;
+}
+
 #root > main {
   flex: 1;
 }
@@ -128,5 +133,31 @@ h1 {
     opacity: 0.1;
   }
 }
-.moon {
+
+.paraph-icon {
+  animation: icon-motion 1.5s alternate infinite linear;
+}
+
+@keyframes icon-motion {
+  0% {
+    top: -20px;
+    animation-timing-function: ease-in;
+  }
+  34% {
+    transform: scale(1, 1);
+  }
+  35% {
+    top: 20px;
+    animation-timing-function: ease-out;
+    transform: scale(1.5, 0.5);
+  }
+  45% {
+    transform: scale(1, 1);
+  }
+  90% {
+    top: -20px;
+  }
+  100% {
+    top: -20px;
+  }
 }

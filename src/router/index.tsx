@@ -1,7 +1,6 @@
 import FullPageLoading from "@/components/base/fullPageLoading/FullPageLoading";
 import { AuthLayout } from "@/components/layouts/auth/AuthLayout";
 import { ROUTES } from "@/constants";
-import { useAutoLogin } from "@/hooks";
 import { useGetContractContent } from "@/hooks/useGetContractContent";
 import { NotFound } from "@/views/NotFound";
 import { lazy, Suspense } from "react";
@@ -10,7 +9,12 @@ import { Layout } from "../components";
 
 const Login = lazy(() => import("@/views/Login"));
 const OTP = lazy(() => import("@/views/OTP"));
-const Home = lazy(() => import("@/views/Home"));
+const Contract = lazy(() => import("@/views/Contract"));
+const Contracts = lazy(() => import("@/views/Contracts"));
+const SignFailedFeature = lazy(() => import("@/views/SignFailedFeature"));
+const SignSuccessFeature = lazy(() => import("@/views/SignSuccessFeature"));
+const ContractsSignSuccessFeature = lazy(() => import("@/views/ContractsSignSuccessFeature"));
+const ContractsFailedFeature = lazy(() => import("@/views/ContractsSignFailedFeature"));
 
 const Router = () => {
   // useEffect(() => {
@@ -24,16 +28,19 @@ const Router = () => {
   // }, []);
   const { appLoading, contract } = useGetContractContent();
 
-  useAutoLogin();
-
   if (appLoading) return <FullPageLoading />;
 
   return (
     <BrowserRouter>
       <Suspense fallback={<FullPageLoading />}>
         <Routes>
-          <Route path={ROUTES.HOME} element={<Layout />}>
-            <Route path={ROUTES.HOME} element={<Home />} />
+          <Route path={ROUTES.CONTRACT} element={<Layout />}>
+            <Route path={ROUTES.CONTRACTS} element={<Contracts />} />
+            <Route path={ROUTES.CONTRACT} element={<Contract />} />
+            <Route path={ROUTES.UNSUCCESSFUL} element={<SignFailedFeature />} />
+            <Route path={ROUTES.SUCCESSFUL} element={<SignSuccessFeature />} />
+            <Route path={ROUTES.CONTRACTS_SUCCESSFUL} element={<ContractsSignSuccessFeature />} />
+            <Route path={ROUTES.CONTRACTS_SUCCESSFUL} element={<ContractsFailedFeature />} />
             <Route path={ROUTES.NOT_FOUND} element={<NotFound />} />
           </Route>
           <Route path={ROUTES.AUTH} element={<AuthLayout />}>

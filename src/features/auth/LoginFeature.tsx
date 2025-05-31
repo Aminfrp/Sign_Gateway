@@ -59,7 +59,7 @@ export const LoginFeature = () => {
           navigate("/auth/otp");
         });
     } catch (error: any) {
-      toast.error(error.message);
+      console.error(error.message);
     }
   };
 
@@ -123,15 +123,6 @@ export const LoginFeature = () => {
           }
         >
           ورود به درگاه امضا{" "}
-        </Button>
-        <div className="flex gap-2 items-center">
-          <div className="flex-1 h-[2px] bg-gradient-to-r from-slate-100 to-transparent rounded-full"></div>
-          <div className="text-xs">یا</div>
-          <div className="flex-1 h-[2px] bg-gradient-to-l from-slate-100 to-transparent rounded-full"></div>
-        </div>
-        <Button variant="outline">
-          <PodIcon />
-          ورود از طریق پاد
         </Button>
       </div>
     </form>

@@ -3,6 +3,8 @@ import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import "react-pdf/dist/esm/Page/TextLayer.css";
 import { PdfDataType, StatusEnum } from "./pdf-viewer.types";
+import ParaphLoading from "@/components/base/paraphLoading/ParaphLoading";
+import { BiMessageSquareError } from "react-icons/bi";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -43,18 +45,19 @@ export const PdfViewer = ({ url, status }: PdfDataType) => {
   }
 
   const render = {
-    [StatusEnum.pending]: <div>Loading ...</div>,
+    [StatusEnum.pending]: <ParaphLoading />,
     [StatusEnum.success]: (
       <>
-        <div ref={containerRef} className="w-full h-full overflow-auto">
+        <div ref={containerRef} className="w-full overflow-auto">
           <Document
             file={url}
             onLoadError={(error) => console.error(error)}
             onLoadSuccess={onDocumentLoadSuccess}
-            loading={<div>Loading ...</div>}
+            loading={ <ParaphLoading />}
+            className="max-h-[30rem] overflow-auto"
             error={
-              <p className={"text-danger-900 text-sm text-center"}>
-                نمونه سند مورد نظر دریافت نشد !
+              <p className={"text-red-600 text-sm text-center flex gap-3 justify-center items-center"}>
+                <BiMessageSquareError size={25} />  سند مورد نظر دریافت نشد !
               </p>
             }
           >
@@ -80,11 +83,11 @@ export const PdfViewer = ({ url, status }: PdfDataType) => {
         نمونه سند مورد نظر دریافت نشد !
       </p>
     ),
-    [StatusEnum.idle]: <div>Loading ...</div>,
+    [StatusEnum.idle]:  <ParaphLoading />,
   };
 
   return (
-    <div className="flex-1 justify-center flex flex-col items-center">
+    <div className="flex-1 justify-center flex flex-col items-center h-full">
       {render[status]}
     </div>
   );

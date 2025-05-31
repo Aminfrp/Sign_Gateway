@@ -44,6 +44,17 @@ export const getCodeParam = () => {
   }
 };
 
+export const getAutoLoginCodeParam = () => {
+  if (window) {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has("auto_login_code")) {
+      return urlParams.get("auto_login_code");
+    } else {
+      return false;
+    }
+  }
+};
+
 export const setSessionStorage = <T>(key: string, value: T) => {
   if (!key) {
     throw "key is required!";
@@ -61,45 +72,23 @@ export const getSessionStorage = (key: string) => {
   }
 };
 
-async function getAutoLoginLink(token: string) {
-  const options = {
-    needAccessToken: true,
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      "Client-Id": APP_CONFIG.CLIENT_ID,
-    },
-  };
-
-  const params = {
-    businessClientId: APP_CONFIG.CLIENT_ID,
-    redirectUrl: `${APP_CONFIG.APP_DOMAIN_URL}auto-login`,
-  };
-  const response = await axios.post(
-    `https://rad-sandbox.sandpod.ir/api/core/users/auto-login?${convertJsonToQueryString(
-      params
-    )}`
-  );
-  return (
-    response &&
-    response.data &&
-    response.data[0] &&
-    response.data[0].autoLoginUrl
-  );
-}
-
 export async function checkAutoLogin() {
   const urlParams = new URLSearchParams(window.location.search);
   const SIGN = urlParams.get("sign");
-  const ACCESS_TOKEN = urlParams.get("access_token");
-
-  if (ACCESS_TOKEN) {
-    setSessionStorage("SIGN", SIGN);
-
-    try {
-      const autoLoginLink = await getAutoLoginLink(ACCESS_TOKEN);
-      window.location.href = autoLoginLink;
-    } catch (error) {}
+  const autoLoginCode = urlParams.get("auto_login_code");
+  const singleContract = window.sessionStorage.getItem("CONTRACT");
+  if (autoLoginCode) {
+    if (singleContract) {
+      setSessionStorage("SIGN", SIGN);
+      window.location.href =
+          APP_CONFIG.AUTO_LOGIN_URL +
+          `/?client_id=${APP_CONFIG.CLIENT_ID}&redirect_uri=${APP_CONFIG.APP_URL}&sign=${SIGN}&response_type=code&auto_login_code=${autoLoginCode}&scope=phone+legal+legal_nationalcode+login+profile`;
+    } else {
+      setSessionStorage("SIGN", SIGN);
+      window.location.href =
+          APP_CONFIG.AUTO_LOGIN_URL +
+          `/?client_id=${APP_CONFIG.CLIENT_ID}&redirect_uri=${APP_CONFIG.APP_URL}/contracts&sign=${SIGN}&response_type=code&auto_login_code=${autoLoginCode}&scope=phone+legal+legal_nationalcode+login+profile`;
+    }
   }
 }
 

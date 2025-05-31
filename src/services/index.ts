@@ -1,5 +1,5 @@
 import { APP_CONFIG } from "@/constants";
-import { getCodeParam } from "@/lib/utils";
+import {getAutoLoginCodeParam} from "@/lib/utils";
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import { toast } from "react-toastify";
 
@@ -44,8 +44,8 @@ api.instance.interceptors.response.use(
   (data) => data,
   async (error) => {
     toast.error(error.response.data.errorMessage);
-    if (error.status === 403) {
-      if (!getCodeParam()) {
+    if (error.status === 401) {
+      if (!getAutoLoginCodeParam()) {
         await axios
           .post(BASE_URL + "/api/auth/refresh_token", {
             refresh_token: localStorage.getItem("refreshToken") as string,

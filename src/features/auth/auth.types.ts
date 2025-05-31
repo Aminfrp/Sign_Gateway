@@ -77,3 +77,8 @@ type VerifyResponse = {
   token_type: string;
 };
 export type VerifyResponseType = ParaphResponse<VerifyResponse>;
+
+export type AutoLoginRequestType = {
+  redirect_uri: string;
+  code: string;
+};
